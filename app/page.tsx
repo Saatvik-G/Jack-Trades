@@ -18,12 +18,21 @@ export default function Home() {
   const [data, setData] = useState<ConnectionResponse | null>(null);
   const [mode, setMode] = useState<ViewMode>('serious');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDebouncing, setIsDebouncing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchConnections = async (selectedTopic: string) => {
+    if (isLoading || isDebouncing) return;
+
     setIsLoading(true);
+    setIsDebouncing(true);
     setError(null);
     setTopic(selectedTopic);
+
+    // 500ms debounce to prevent accidental double-submits
+    const debounceTimeout = setTimeout(() => {
+      setIsDebouncing(false);
+    }, 500);
 
     try {
       const res = await fetch('/api/connections', {
@@ -51,10 +60,12 @@ export default function Home() {
   };
 
   const handleRegenerate = () => {
-    if (topic && !isLoading) {
+    if (topic && !isLoading && !isDebouncing) {
       fetchConnections(topic);
     }
   };
+
+  const isInteractionDisabled = isLoading || isDebouncing;
 
   return (
     <>
@@ -70,7 +81,7 @@ export default function Home() {
           <Header />
 
           {/* Search / Topic Input Box */}
-          <TopicInput onSubmit={fetchConnections} isLoading={isLoading} />
+          <TopicInput onSubmit={fetchConnections} isLoading={isInteractionDisabled} />
 
           {/* Loading State */}
           {isLoading && <LoadingSkeleton />}
@@ -111,7 +122,7 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={handleRegenerate}
-                    disabled={isLoading}
+                    disabled={isInteractionDisabled}
                     className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/90 font-medium text-xs flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer disabled:opacity-50"
                     title="Generate a fresh set of connections with randomized fields"
                   >

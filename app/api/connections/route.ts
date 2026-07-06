@@ -133,28 +133,56 @@ TOPIC TO EXPLORE: "${topic.trim()}"
 INSTRUCTION: Select 4 to 6 DIFFERENT fields from the candidate list above. Uncover non-obvious, mechanism-level structural connections for "${topic.trim()}".
 `;
 
-    // Fetch call to Gemini API using gemini-2.5-flash
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: `${BASE_SYSTEM_PROMPT}\n\n${userPrompt}` }],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.8,
-            responseMimeType: 'application/json',
+    // Fetch call to Gemini API using gemini-2.5-flash with retry resilience
+    let response: Response;
+    let attempt = 0;
+    const maxRetries = 3;
+
+    while (true) {
+      response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        }),
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [{ text: `${BASE_SYSTEM_PROMPT}\n\n${userPrompt}` }],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.8,
+              responseMimeType: 'application/json',
+            },
+          }),
+        }
+      );
+
+      if (response.status === 429) {
+        attempt++;
+        const backoffMs = Math.pow(2, attempt - 1) * 1000; // 1000ms, 2000ms, 4000ms
+        console.warn(
+          `[RATE LIMIT] Gemini API returned 429. Attempt ${attempt} of ${maxRetries}. Retrying in ${backoffMs}ms for topic: "${topic.trim()}"`
+        );
+        if (attempt <= maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, backoffMs));
+          continue;
+        } else {
+          console.error(
+            `[RATE LIMIT FAILED] Max retries exhausted for 429 rate limit. Topic: "${topic.trim()}"`
+          );
+          return NextResponse.json(
+            { error: 'Getting a lot of requests right now — try again in a few seconds' },
+            { status: 429 }
+          );
+        }
       }
-    );
+
+      break;
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
