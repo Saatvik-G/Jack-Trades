@@ -1,15 +1,22 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'Jack&Trades — Cross-Discipline Explorer',
-  description: 'Discover deep, mechanism-level connections across Science, Math, Psychology, Art, Philosophy, and more.',
+  title: 'Jack&Trades — The Polymath Engine',
+  description: 'Discover non-obvious, structural connections across Science, Math, Psychology, Art, Philosophy, and 16+ disciplines.',
 };
 
 export default function RootLayout({
@@ -18,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="flex flex-col min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+      <body className="flex flex-col min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-indigo-500 selection:text-white">
         {children}
       </body>
     </html>
