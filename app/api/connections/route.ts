@@ -9,37 +9,54 @@ export interface ConnectionItem {
   emoji: string;
 }
 
-const SYSTEM_PROMPT = `
+const ALL_DISCIPLINES = [
+  'Science',
+  'Mathematics',
+  'Psychology',
+  'Philosophy',
+  'History',
+  'Art',
+  'Economics',
+  'Design',
+  'Biology',
+  'Music',
+  'Architecture',
+  'Game Theory',
+  'Sociology',
+  'Engineering',
+  'Literature',
+  'Ecology',
+];
+
+function getRandomCandidates(allFields: string[], count: number = 9): string[] {
+  const shuffled = [...allFields].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+const BASE_SYSTEM_PROMPT = `
 You are the AI engine behind "Jack&Trades" (The Cross-Discipline Explorer), built on the core philosophy:
 "A jack of all trades is a master of none, but oftentimes better than a master of one."
 
 YOUR MISSION:
 When given any topic, concept, technique, or skill, generate 4 to 6 distinct cross-disciplinary connections.
-Each connection MUST come from a DIFFERENT field selected ONLY from these 12 allowed disciplines:
-- Science
-- Mathematics
-- Psychology
-- Philosophy
-- History
-- Art
-- Economics
-- Design
-- Biology
-- Music
-- Architecture
-- Game Theory
+
+VARIETY & NOVELTY INSTRUCTIONS:
+- You will be provided a candidate subset of fields for this specific prompt.
+- You MUST pick your 4 to 6 fields EXCLUSIVELY from the provided candidate list.
+- Each connection MUST come from a DIFFERENT field in the candidate list.
+- Actively avoid defaulting to standard "safe" combinations (like Science/Art/Philosophy). Seek surprising, non-obvious, but structurally precise choices.
 
 STRICT QUALITY BAR & TONE INSTRUCTIONS:
 1. NO SURFACE-LEVEL WORDPLAY OR OVERUSED TRITE ANALOGIES:
    - BAD: "Recursion is like Russian nesting dolls because dolls go inside dolls." (Too shallow, surface object matching).
-   - GOOD: Explaining how recursive stack frames mirror structural self-similarity in architectural cantilevers, fractal biological growth, or recursive narrative frames in literary history.
+   - GOOD: Explaining how recursive stack frames mirror structural self-similarity in architectural cantilevers, biological morphogenesis, or recursive narrative frames in literature.
 2. MECHANISM-LEVEL STRUCTURAL SIMILARITY:
-   - Focus on the underlying abstract mechanics, feedback loops, optimization pathways, state spaces, equilibrium dynamics, or structural patterns that both fields share.
+   - Focus on underlying abstract mechanics, feedback loops, optimization pathways, state spaces, equilibrium dynamics, or structural patterns that both fields share.
 3. SUBSTANTIVELY INSIGHTFUL + LIGHTLY WITTY:
    - Tone must be sharp, intellectually illuminating, and lightly witty.
    - Humor MUST sit on top of a genuine structural connection. Never replace insight with a forced pun or superficial joke. A card that is funny but shallow is a complete FAILURE.
 4. REQUIRED RESPONSE FIELDS FOR EACH CONNECTION:
-   - "field": Must be one of the 12 exact disciplines.
+   - "field": Must be one of the exact fields from your candidate list.
    - "analogy": A crisp, high-impact one-line structural analogy.
    - "explanation": 2-3 sentences explaining the exact structural/mechanistic equivalence between the topic and this field.
    - "funFact": A punchy, shareable, screenshot-worthy one-liner with genuine wit tied directly to the real-world manifestation of this connection.
@@ -50,43 +67,25 @@ FEW-SHOT EXAMPLES OF THE EXPECTED QUALITY:
 Example 1: Topic = "Gradient Descent"
 [
   {
-    "field": "Economics",
-    "analogy": "Central bank interest rate adjustments attempting to navigate stagflation.",
-    "explanation": "Gradient descent minimizes a loss function by taking incremental steps proportional to the local negative gradient. Similarly, central banks tweak monetary policy in iterative steps based on current inflation and employment metrics to navigate towards an optimal macroeconomic equilibrium, suffering from identical momentum and overshooting risks.",
-    "funFact": "The 1970s Federal Reserve essentially acted as a learning rate that was set way too high, causing hyper-oscillations in inflation.",
-    "emoji": "📈"
+    "field": "Sociology",
+    "analogy": "Social norms gradually shifting toward cultural equilibrium via group feedback.",
+    "explanation": "Societal conventions evolve through continuous micro-interactions where social friction acts as a loss metric. Individuals make incremental behavioral adjustments based on peer reaction gradient, steering collective behavior toward social stability.",
+    "funFact": "Fashion trends are basically society's collective attempt to find local minima in the landscape of social approval.",
+    "emoji": "👥"
   },
   {
-    "field": "Biology",
-    "analogy": "Slime mold (Physarum polycephalum) foraging for nutrients across a maze.",
-    "explanation": "Rather than calculating global paths, slime molds extend cytoplasm in all directions and retract channels where nutrient gradients decline, iteratively converging on the shortest path. This physical relaxation algorithm directly mirrors stochastic gradient descent finding minimum energy configurations without an explicit map.",
-    "funFact": "Tokyo subway engineers spent decades designing efficient rail networks; a slime mold recreated their exact layout in 26 hours for a piece of oat flake.",
-    "emoji": "🍄"
+    "field": "Ecology",
+    "analogy": "Forest canopy trees competing for sunlight through adaptive growth vectors.",
+    "explanation": "Trees don't plan full growth maps; they extend branches iteratively along photon density gradients while shedding shaded leaves. This localized energy optimization finds optimal canopy coverage without central coordination.",
+    "funFact": "Trees were running gradient descent optimization on solar capture millions of years before gradient descent had a name.",
+    "emoji": "🌲"
   },
   {
-    "field": "Music",
-    "analogy": "Improvised jazz soloist adjusting pitch towards key centers based on auditory feedback.",
-    "explanation": "During rapid modal improvisation, a musician continuously samples tension (the local error metric) relative to the underlying chord harmony, making micro-adjustments in pitch and rhythm to descent into harmonic resolution.",
-    "funFact": "Miles Davis's famous advice 'do not play what's there, play what's missing' is essentially regularized loss optimization for jazz.",
-    "emoji": "🎷"
-  }
-]
-
-Example 2: Topic = "Recursion"
-[
-  {
-    "field": "Architecture",
-    "analogy": "Self-supporting cantilever trusses in Gothic cathedral vaults.",
-    "explanation": "Recursive code breaks a complex problem into identical sub-problems until reaching a base case. Gothic vaulted arches distribute structural load by delegating weight iteratively to smaller flying buttresses, each carrying a miniature replica of the main arch's vector forces down to the foundation.",
-    "funFact": "If Gothic architects forgot their 'base case' bedrock foundation, the entire stack overflowed into the nave.",
-    "emoji": "🏛️"
-  },
-  {
-    "field": "Game Theory",
-    "analogy": "Common knowledge loops in backward induction for multi-player games.",
-    "explanation": "Evaluating game trees requires reasoning about 'what I think you think I think', creating recursive mental state stacks. Players collapse this infinite regress through backward induction, starting from the terminal payoff node (the base case) and unfolding back to move zero.",
-    "funFact": "Poker champions are basically running deep call-stack recursion while trying to maintain a completely blank expression.",
-    "emoji": "♟️"
+    "field": "Literature",
+    "analogy": "Drafting an epic novel through iterative structural revisions.",
+    "explanation": "An author refines plot consistency by gauging narrative tension (the error signal) chapter by chapter, taking small structural edits to minimize plot holes and converge on character arc resolution.",
+    "funFact": "Hemingway rewrote the ending to A Farewell to Arms 39 times—39 iterations of loss minimization to find the perfect emotional impact.",
+    "emoji": "📚"
   }
 ]
 
@@ -123,9 +122,18 @@ export async function POST(req: Request) {
       );
     }
 
-    const userPrompt = `Explore 4 to 6 non-obvious, structural cross-disciplinary connections for the topic: "${topic.trim()}". Ensure each connection comes from a different allowed field.`;
+    // Step 3: Randomly select a subset of 8-10 candidate fields for this request
+    const candidateFields = getRandomCandidates(ALL_DISCIPLINES, 9);
 
-    // Fetch call to Gemini API using gemini-2.5-flash (or gemini-1.5-flash) with structured JSON output
+    const userPrompt = `
+CANDIDATE FIELDS FOR THIS REQUEST: [${candidateFields.join(', ')}]
+
+TOPIC TO EXPLORE: "${topic.trim()}"
+
+INSTRUCTION: Select 4 to 6 DIFFERENT fields from the candidate list above. Uncover non-obvious, mechanism-level structural connections for "${topic.trim()}".
+`;
+
+    // Fetch call to Gemini API using gemini-2.5-flash
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
@@ -137,11 +145,11 @@ export async function POST(req: Request) {
           contents: [
             {
               role: 'user',
-              parts: [{ text: `${SYSTEM_PROMPT}\n\nUSER TOPIC: ${topic.trim()}` }],
+              parts: [{ text: `${BASE_SYSTEM_PROMPT}\n\n${userPrompt}` }],
             },
           ],
           generationConfig: {
-            temperature: 0.7,
+            temperature: 0.8,
             responseMimeType: 'application/json',
           },
         }),
@@ -167,7 +175,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Clean potential markdown wrap if present
     let cleanJsonStr = rawContent.trim();
     if (cleanJsonStr.startsWith('```json')) {
       cleanJsonStr = cleanJsonStr.replace(/^```json\s*/, '').replace(/\s*```$/, '');
@@ -184,7 +191,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Inject unique IDs for React keys
     const connectionsWithIds: ConnectionItem[] = parsedData.connections.map(
       (item: any, idx: number) => ({
         id: `conn-${Date.now()}-${idx}`,

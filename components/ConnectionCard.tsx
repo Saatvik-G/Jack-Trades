@@ -1,6 +1,6 @@
 import React from 'react';
 import { Connection, ViewMode } from '../types';
-import { Sparkles, ArrowUpRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface ConnectionCardProps {
   connection: Connection;
@@ -20,6 +20,10 @@ const FIELD_ACCENTS: Record<string, { bg: string; text: string; border: string }
   Music: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
   Architecture: { bg: 'bg-stone-100', text: 'text-stone-700', border: 'border-stone-200' },
   'Game Theory': { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
+  Sociology: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200' },
+  Engineering: { bg: 'bg-sky-50', text: 'text-sky-700', border: 'border-sky-200' },
+  Literature: { bg: 'bg-fuchsia-50', text: 'text-fuchsia-700', border: 'border-fuchsia-200' },
+  Ecology: { bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-300' },
 };
 
 export const ConnectionCard: React.FC<ConnectionCardProps> = ({ connection, mode }) => {

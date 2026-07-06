@@ -10,11 +10,15 @@ export type Discipline =
   | 'Biology'
   | 'Music'
   | 'Architecture'
-  | 'Game Theory';
+  | 'Game Theory'
+  | 'Sociology'
+  | 'Engineering'
+  | 'Literature'
+  | 'Ecology';
 
 export interface Connection {
   id: string;
-  field: Discipline;
+  field: Discipline | string;
   analogy: string;
   explanation: string;
   funFact: string;
