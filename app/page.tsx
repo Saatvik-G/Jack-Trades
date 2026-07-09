@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/Header';
+import { Navbar } from '@/components/Navbar';
 import { TopicInput } from '@/components/TopicInput';
 import { ModeToggle } from '@/components/ModeToggle';
 import { ConnectionCard } from '@/components/ConnectionCard';
@@ -13,6 +16,9 @@ import { ConnectionResponse, ViewMode } from '@/types';
 import { RotateCw, Compass, Network, Sparkles } from 'lucide-react';
 
 export default function Home() {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [topic, setTopic] = useState<string>('');
   const [data, setData] = useState<ConnectionResponse | null>(null);
@@ -21,6 +27,9 @@ export default function Home() {
   const [isDebouncing, setIsDebouncing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
   const fetchConnections = async (selectedTopic: string) => {
     if (isLoading || isDebouncing) return;
 
@@ -28,6 +37,7 @@ export default function Home() {
     setIsDebouncing(true);
     setError(null);
     setTopic(selectedTopic);
+    setIsSaved(false); // Reset saved status for new searches
 
     // 500ms debounce to prevent accidental double-submits
     const debounceTimeout = setTimeout(() => {
@@ -65,6 +75,41 @@ export default function Home() {
     }
   };
 
+  const handleSave = async () => {
+    if (!session) {
+      router.push('/login');
+      return;
+    }
+
+    if (!data || isSaving || isSaved) return;
+
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/topics/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          topic: data.topic,
+          connections: data.connections,
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json();
+        throw new Error(errJson.error || 'Failed to save topic.');
+      }
+
+      setIsSaved(true);
+    } catch (err: any) {
+      console.error('Failed to save connection:', err);
+      setError(err.message || 'Failed to save to Second Brain.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const isInteractionDisabled = isLoading || isDebouncing;
 
   return (
@@ -77,6 +122,9 @@ export default function Home() {
         <NetworkBackground />
 
         <main className="w-full max-w-7xl mx-auto px-4 pb-20 relative z-10">
+          {/* Global Navbar */}
+          <Navbar />
+
           {/* Top Header */}
           <Header />
 
@@ -140,6 +188,9 @@ export default function Home() {
                     connection={connection}
                     mode={mode}
                     index={idx}
+                    onSave={handleSave}
+                    isSaved={isSaved}
+                    isSaving={isSaving}
                   />
                 ))}
               </div>

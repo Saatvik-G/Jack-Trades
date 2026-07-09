@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: 'Discover non-obvious, structural connections across Science, Math, Psychology, Art, Philosophy, and 16+ disciplines.',
 };
 
+import { Providers } from '@/components/Providers';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="flex flex-col min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-indigo-500 selection:text-white">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

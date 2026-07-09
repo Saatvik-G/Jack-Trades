@@ -1,11 +1,14 @@
 import React from 'react';
 import { Connection, ViewMode } from '../types';
-import { Sparkles, ArrowRight, Waypoints } from 'lucide-react';
+import { Sparkles, ArrowRight, Waypoints, Bookmark, BookmarkCheck, Loader2 } from 'lucide-react';
 
 interface ConnectionCardProps {
   connection: Connection;
   mode: ViewMode;
   index?: number;
+  onSave?: () => void;
+  isSaved?: boolean;
+  isSaving?: boolean;
 }
 
 const FIELD_ACCENTS: Record<string, { bg: string; text: string; border: string; glow: string }> = {
@@ -27,7 +30,14 @@ const FIELD_ACCENTS: Record<string, { bg: string; text: string; border: string; 
   Ecology: { bg: 'bg-emerald-100/90', text: 'text-emerald-900', border: 'border-emerald-300', glow: 'from-emerald-600' },
 };
 
-export const ConnectionCard: React.FC<ConnectionCardProps> = ({ connection, mode, index = 0 }) => {
+export const ConnectionCard: React.FC<ConnectionCardProps> = ({
+  connection,
+  mode,
+  index = 0,
+  onSave,
+  isSaved = false,
+  isSaving = false,
+}) => {
   const accent = FIELD_ACCENTS[connection.field] || {
     bg: 'bg-slate-100',
     text: 'text-slate-800',
@@ -51,11 +61,37 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({ connection, mode
               {connection.field}
             </span>
           </div>
-          {mode === 'playful' && connection.emoji && (
-            <span className="text-2xl transform group-hover:scale-110 transition-transform duration-200" title={connection.field}>
-              {connection.emoji}
-            </span>
-          )}
+
+          <div className="flex items-center gap-2">
+            {mode === 'playful' && connection.emoji && (
+              <span className="text-2xl transform group-hover:scale-110 transition-transform duration-200 mr-0.5" title={connection.field}>
+                {connection.emoji}
+              </span>
+            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onSave) onSave();
+              }}
+              disabled={isSaving || isSaved}
+              className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                isSaved
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                  : isSaving
+                  ? 'bg-slate-50 border-slate-200 text-slate-400 animate-pulse'
+                  : 'bg-white hover:bg-indigo-50 border-slate-200 hover:border-indigo-200 text-slate-400 hover:text-indigo-600'
+              }`}
+              title={isSaved ? 'Saved to Second Brain' : 'Save to Second Brain'}
+            >
+              {isSaving ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : isSaved ? (
+                <BookmarkCheck className="w-3.5 h-3.5 fill-emerald-600" />
+              ) : (
+                <Bookmark className="w-3.5 h-3.5" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* One-line Analogy */}

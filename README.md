@@ -14,7 +14,9 @@
   - **Serious Mode**: Structural explanation is front and center; fun facts are subdued.
   - **Playful Mode**: Highlights screenshot-worthy, witty fun-facts with visual callouts and emojis while preserving full structural rigor.
 - **Instant Regeneration**: One-click regeneration for fresh perspective sets on the same topic.
-- **Deploy-Ready & Minimalist**: Built with a clean, responsive layout, generous whitespace, loading shimmers, and robust error handling.
+- **User Authentication**: Secure credentials-based authentication via **NextAuth.js** to manage personal polymath profiles.
+- **Personal Second Brain**: Save interesting topic connections to your account and browse them through a searchable, filterable, and sortable dashboard.
+- **Interactive Knowledge Graph**: Visualize saved topics and their connected fields in an interactive D3-force network graph. Topics act as central nodes that cluster around shared disciplines, letting you trace common patterns. Click nodes to open quick-view side panels.
 
 ---
 
@@ -27,6 +29,9 @@
 ## 🛠️ Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router, React 19)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Visualization**: [D3.js](https://d3js.org/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **AI Engine**: [Google Gemini API](https://ai.google.dev/) (`gemini-2.5-flash`)
@@ -47,15 +52,26 @@ cd Jack-Trades
 npm install
 ```
 
-### 3. Configure Environment Variables
+### 3. Setup Database Schema
+Execute the SQL script in [`supabase/schema.sql`](file:///d:/Projects/Jack&Trade/supabase/schema.sql) in your **Supabase SQL Editor** to create the tables (`users`, `topics`, `connections`) and their indices.
+
+### 4. Configure Environment Variables
 Create a `.env.local` file in the root directory:
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# NextAuth Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret_here
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 ```
 
-> ⚠️ **Note**: Never commit `.env.local` or expose your API keys. It is automatically excluded via `.gitignore`.
+> ⚠️ **Note**: Never commit `.env.local` or expose your API keys/secrets. It is automatically excluded via `.gitignore`.
 
-### 4. Run Development Server
+### 5. Run Development Server
 ```bash
 npm run dev
 ```
