@@ -27,8 +27,8 @@ export default function Home() {
   const [isDebouncing, setIsDebouncing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [isSaved, setIsSaved] = useState<boolean>(false);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [savedConnectionIds, setSavedConnectionIds] = useState<string[]>([]);
+  const [savingConnectionIds, setSavingConnectionIds] = useState<string[]>([]);
 
   const fetchConnections = async (selectedTopic: string) => {
     if (isLoading || isDebouncing) return;
@@ -37,7 +37,8 @@ export default function Home() {
     setIsDebouncing(true);
     setError(null);
     setTopic(selectedTopic);
-    setIsSaved(false); // Reset saved status for new searches
+    setSavedConnectionIds([]); // Reset saved status for new searches
+    setSavingConnectionIds([]);
 
     // 500ms debounce to prevent accidental double-submits
     const debounceTimeout = setTimeout(() => {
@@ -75,15 +76,17 @@ export default function Home() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSaveConnection = async (connection: any) => {
     if (!session) {
       router.push('/login');
       return;
     }
 
-    if (!data || isSaving || isSaved) return;
+    if (!data || savedConnectionIds.includes(connection.id) || savingConnectionIds.includes(connection.id)) return;
 
-    setIsSaving(true);
+    // Add to saving
+    setSavingConnectionIds((prev) => [...prev, connection.id]);
+
     try {
       const res = await fetch('/api/topics/save', {
         method: 'POST',
@@ -92,21 +95,23 @@ export default function Home() {
         },
         body: JSON.stringify({
           topic: data.topic,
-          connections: data.connections,
+          connections: [connection], // Save ONLY this connection
         }),
       });
 
       if (!res.ok) {
         const errJson = await res.json();
-        throw new Error(errJson.error || 'Failed to save topic.');
+        throw new Error(errJson.error || 'Failed to save connection.');
       }
 
-      setIsSaved(true);
+      // Add to saved
+      setSavedConnectionIds((prev) => [...prev, connection.id]);
     } catch (err: any) {
       console.error('Failed to save connection:', err);
       setError(err.message || 'Failed to save to Second Brain.');
     } finally {
-      setIsSaving(false);
+      // Remove from saving
+      setSavingConnectionIds((prev) => prev.filter((id) => id !== connection.id));
     }
   };
 
@@ -188,9 +193,9 @@ export default function Home() {
                     connection={connection}
                     mode={mode}
                     index={idx}
-                    onSave={handleSave}
-                    isSaved={isSaved}
-                    isSaving={isSaving}
+                    onSave={() => handleSaveConnection(connection)}
+                    isSaved={savedConnectionIds.includes(connection.id)}
+                    isSaving={savingConnectionIds.includes(connection.id)}
                   />
                 ))}
               </div>
