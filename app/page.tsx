@@ -14,6 +14,7 @@ import { NetworkBackground } from '@/components/NetworkBackground';
 import { SplashAnimation } from '@/components/SplashAnimation';
 import { ConnectionResponse, ViewMode } from '@/types';
 import { RotateCw, Compass, Network, Sparkles } from 'lucide-react';
+import { track } from '@vercel/analytics';
 
 export default function Home() {
   const { data: session } = useSession();
@@ -32,6 +33,8 @@ export default function Home() {
 
   const fetchConnections = async (selectedTopic: string) => {
     if (isLoading || isDebouncing) return;
+
+    track('topic_search', { topic: selectedTopic });
 
     setIsLoading(true);
     setIsDebouncing(true);
@@ -72,8 +75,14 @@ export default function Home() {
 
   const handleRegenerate = () => {
     if (topic && !isLoading && !isDebouncing) {
+      track('regenerate_clicked', { topic });
       fetchConnections(topic);
     }
+  };
+
+  const handleModeToggle = (newMode: ViewMode) => {
+    setMode(newMode);
+    track('mode_toggled', { page: 'home', mode: newMode });
   };
 
   const handleSaveConnection = async (connection: any) => {
@@ -169,7 +178,7 @@ export default function Home() {
 
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                   {/* Serious / Playful Toggle */}
-                  <ModeToggle mode={mode} onToggle={setMode} />
+                  <ModeToggle mode={mode} onToggle={handleModeToggle} />
 
                   {/* Regenerate Button */}
                   <button

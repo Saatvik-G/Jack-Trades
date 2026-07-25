@@ -8,6 +8,7 @@ import { NetworkBackground } from '@/components/NetworkBackground';
 import { ConnectionCard } from '@/components/ConnectionCard';
 import { ModeToggle } from '@/components/ModeToggle';
 import { ViewMode } from '@/types';
+import { track } from '@vercel/analytics';
 import * as d3 from 'd3';
 import { 
   Network, 
@@ -77,6 +78,11 @@ export default function KnowledgeGraphPage() {
   const [selectedTopic, setSelectedTopic] = useState<SavedTopic | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [mode, setMode] = useState<ViewMode>('serious');
+
+  const handleModeToggle = (newMode: ViewMode) => {
+    setMode(newMode);
+    track('mode_toggled', { page: 'knowledge-graph', mode: newMode });
+  };
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -452,7 +458,7 @@ export default function KnowledgeGraphPage() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <ModeToggle mode={mode} onToggle={setMode} />
+                    <ModeToggle mode={mode} onToggle={handleModeToggle} />
                     <button
                       onClick={() => setSelectedTopic(null)}
                       className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"

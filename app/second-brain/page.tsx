@@ -8,6 +8,7 @@ import { NetworkBackground } from '@/components/NetworkBackground';
 import { ConnectionCard } from '@/components/ConnectionCard';
 import { ModeToggle } from '@/components/ModeToggle';
 import { ViewMode } from '@/types';
+import { track } from '@vercel/analytics';
 import { 
   Search, 
   Trash2, 
@@ -51,6 +52,11 @@ export default function SecondBrainPage() {
   const [selectedField, setSelectedField] = useState<string>('All Fields');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'alphabetical'>('newest');
   const [mode, setMode] = useState<ViewMode>('serious');
+
+  const handleModeToggle = (newMode: ViewMode) => {
+    setMode(newMode);
+    track('mode_toggled', { page: 'second-brain', mode: newMode });
+  };
 
   // Redirect to login if unauthenticated
   useEffect(() => {
@@ -182,7 +188,7 @@ export default function SecondBrainPage() {
           </div>
 
           {topics.length > 0 && selectedTopic && (
-            <ModeToggle mode={mode} onToggle={setMode} />
+            <ModeToggle mode={mode} onToggle={handleModeToggle} />
           )}
         </div>
 
