@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 };
 
 import { Providers } from '@/components/Providers';
-import { AmbientBlobs } from '@/components/AmbientBlobs';
+import { AmbientBackground } from '@/components/AmbientBackground';
 
 export default function RootLayout({
   children,
@@ -54,7 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="flex flex-col min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-indigo-500 selection:text-white relative">
-        <AmbientBlobs />
+        <AmbientBackground />
         <Providers>{children}</Providers>
         <Analytics />
       </body>
