@@ -79,6 +79,10 @@ export default function KnowledgeGraphPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [mode, setMode] = useState<ViewMode>('serious');
 
+  // Mobile View Fallback state
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [activeView, setActiveView] = useState<'graph' | 'list'>('graph');
+
   const handleModeToggle = (newMode: ViewMode) => {
     setMode(newMode);
     track('mode_toggled', { page: 'knowledge-graph', mode: newMode });
@@ -94,6 +98,16 @@ export default function KnowledgeGraphPage() {
       router.push('/login');
     }
   }, [status, router]);
+
+  // Screen size detection for mobile fallback
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Fetch saved topics
   const fetchTopics = async () => {
@@ -112,6 +126,7 @@ export default function KnowledgeGraphPage() {
   useEffect(() => {
     if (status === 'authenticated') {
       fetchTopics();
+      track('knowledge_graph_viewed');
     }
   }, [status]);
 
@@ -380,121 +395,215 @@ export default function KnowledgeGraphPage() {
         </div>
 
         {topics.length === 0 ? (
+          /* Empty State */
           <div className="flex-grow flex items-center justify-center py-12">
             <div className="w-full max-w-md text-center p-8 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200 shadow-sm">
               <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
                 <Brain className="w-7 h-7" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
-                No Graph Nodes Found
+                Nothing saved yet
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                You need to save topics with their connections in the Explorer to generate nodes in your Knowledge Graph.
+                Try exploring a topic in the Explorer first to populate your knowledge graph nodes.
               </p>
               <button
                 onClick={() => router.push('/')}
                 className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
               >
-                Explore Topics
+                Try exploring a topic
               </button>
             </div>
           </div>
         ) : (
-          /* Graph Interactive Container */
-          <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative min-h-[500px]">
-            
-            {/* Graph Visual Canvas (8 cols or 12 if side panel is closed) */}
-            <div className={`lg:col-span-12 rounded-3xl bg-white border border-slate-200 shadow-xs relative flex flex-col overflow-hidden min-h-[500px] transition-all`}>
-              
-              {/* Zoom Buttons Controls Overlay */}
-              <div className="absolute bottom-4 right-4 z-20 flex flex-col gap-1.5 p-1 rounded-xl bg-white/80 backdrop-blur border border-slate-200/80 shadow-xs">
-                <button
-                  id="zoom-in"
-                  className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
-                  title="Zoom In"
-                >
-                  <ZoomIn className="w-4 h-4" />
-                </button>
-                <button
-                  id="zoom-out"
-                  className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
-                  title="Zoom Out"
-                >
-                  <ZoomOut className="w-4 h-4" />
-                </button>
-                <button
-                  id="zoom-reset"
-                  className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
-                  title="Reset View"
-                >
-                  <Maximize2 className="w-4 h-4" />
-                </button>
+          /* Active Graph / List State */
+          <div className="flex-grow flex flex-col">
+            {/* Mobile View Toggle Tabs */}
+            {isMobile && (
+              <div className="flex justify-center mb-6 z-20">
+                <div className="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200 shadow-3xs">
+                  <button
+                    onClick={() => setActiveView('graph')}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeView === 'graph'
+                        ? 'bg-white text-indigo-600 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    Graph View
+                  </button>
+                  <button
+                    onClick={() => setActiveView('list')}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeView === 'list'
+                        ? 'bg-white text-indigo-600 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    List View
+                  </button>
+                </div>
               </div>
+            )}
 
-              {/* Instructions Tip */}
-              <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-xl bg-slate-900/90 text-white text-[11px] font-medium tracking-wide flex items-center gap-1.5 shadow-sm border border-slate-800">
-                <Compass className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-                <span>Tip: Click any white central node to review saved connections.</span>
-              </div>
-
-              {/* SVGs Container */}
-              <div ref={containerRef} className="flex-grow w-full h-full min-h-[500px] z-10 bg-slate-50/20">
-                <svg ref={svgRef} className="w-full h-full block" />
-              </div>
-            </div>
-
-            {/* Slide-out Topic Connections Panel (Sidebar Overlay) */}
-            {selectedTopic && (
-              <div className="fixed inset-y-0 right-0 z-50 w-full sm:max-w-lg bg-white/95 backdrop-blur-lg shadow-2xl border-l border-slate-200 flex flex-col animate-fade-in-up">
-                {/* Panel Header */}
-                <div className="p-6 border-b border-slate-200 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 block mb-0.5">
-                      Saved Connection Map
-                    </span>
-                    <h2 className="text-2xl font-bold text-slate-950 font-display capitalize">
-                      {selectedTopic.title}
-                    </h2>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <ModeToggle mode={mode} onToggle={handleModeToggle} />
-                    <button
-                      onClick={() => setSelectedTopic(null)}
-                      className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-                      title="Close drawer"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
+            {isMobile && activeView === 'list' ? (
+              /* MOBILE ACCORDION LIST FALLBACK */
+              <div className="space-y-4 max-w-2xl mx-auto w-full animate-fade-in-up">
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex justify-between items-center">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Saved Topics</span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
+                    {topics.length} total
+                  </span>
                 </div>
 
-                {/* Connection Cards Scroll view */}
-                <div className="flex-grow overflow-y-auto p-6 space-y-6">
-                  {selectedTopic.connections.map((c, idx) => {
-                    const formattedConn = {
-                      id: c.id,
-                      field: c.field as any,
-                      analogy: c.analogy,
-                      explanation: c.explanation,
-                      funFact: c.fun_fact,
-                      emoji: c.emoji,
-                    };
-
+                <div className="space-y-3">
+                  {topics.map((item) => {
+                    const isExpanded = selectedTopic?.id === item.id;
                     return (
-                      <ConnectionCard
-                        key={c.id}
-                        connection={formattedConn}
-                        mode={mode}
-                        index={idx}
-                        isSaved={true}
-                      />
+                      <div 
+                        key={item.id} 
+                        className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xs transition-all duration-200"
+                      >
+                        <button
+                          onClick={() => setSelectedTopic(isExpanded ? null : item)}
+                          className="w-full text-left p-5 flex items-center justify-between font-display font-extrabold text-base capitalize hover:bg-slate-50 transition-colors cursor-pointer"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="text-xl shrink-0">{item.connections[0]?.emoji || '💡'}</span>
+                            <span className="text-slate-900">{item.title}</span>
+                          </span>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600">
+                            {item.connections.length} fields
+                          </span>
+                        </button>
+
+                        {isExpanded && (
+                          <div className="border-t border-slate-100 bg-slate-50/20 p-5 space-y-6 animate-fade-in-up">
+                            <div className="flex justify-end">
+                              <ModeToggle mode={mode} onToggle={handleModeToggle} />
+                            </div>
+                            {item.connections.map((c, idx) => {
+                              const formattedConn = {
+                                id: c.id,
+                                field: c.field as any,
+                                analogy: c.analogy,
+                                explanation: c.explanation,
+                                funFact: c.fun_fact,
+                                emoji: c.emoji,
+                              };
+                              return (
+                                <ConnectionCard
+                                  key={c.id}
+                                  connection={formattedConn}
+                                  mode={mode}
+                                  index={idx}
+                                  isSaved={true}
+                                />
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
               </div>
+            ) : (
+              /* D3 GRAPH VIEW */
+              <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative min-h-[500px]">
+                {/* Graph Visual Canvas (8 cols or 12 if side panel is closed) */}
+                <div className={`lg:col-span-12 rounded-3xl bg-white border border-slate-200 shadow-xs relative flex flex-col overflow-hidden min-h-[500px] transition-all`}>
+                  
+                  {/* Zoom Buttons Controls Overlay */}
+                  <div className="absolute bottom-4 right-4 z-20 flex flex-col gap-1.5 p-1 rounded-xl bg-white/80 backdrop-blur border border-slate-200/80 shadow-xs">
+                    <button
+                      id="zoom-in"
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+                      title="Zoom In"
+                    >
+                      <ZoomIn className="w-4 h-4" />
+                    </button>
+                    <button
+                      id="zoom-out"
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+                      title="Zoom Out"
+                    >
+                      <ZoomOut className="w-4 h-4" />
+                    </button>
+                    <button
+                      id="zoom-reset"
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+                      title="Reset View"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Instructions Tip */}
+                  <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-xl bg-slate-900/90 text-white text-[11px] font-medium tracking-wide flex items-center gap-1.5 shadow-sm border border-slate-800">
+                    <Compass className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                    <span>Tip: Click any white central node to review saved connections.</span>
+                  </div>
+
+                  {/* SVGs Container */}
+                  <div ref={containerRef} className="flex-grow w-full h-full min-h-[500px] z-10 bg-slate-50/20">
+                    <svg ref={svgRef} className="w-full h-full block" />
+                  </div>
+                </div>
+
+                {/* Slide-out Topic Connections Panel (Sidebar Overlay) */}
+                {selectedTopic && !isMobile && (
+                  <div className="fixed inset-y-0 right-0 z-50 w-full sm:max-w-lg bg-white/95 backdrop-blur-lg shadow-2xl border-l border-slate-200 flex flex-col animate-fade-in-up">
+                    {/* Panel Header */}
+                    <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 block mb-0.5">
+                          Saved Connection Map
+                        </span>
+                        <h2 className="text-2xl font-bold text-slate-950 font-display capitalize">
+                          {selectedTopic.title}
+                        </h2>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <ModeToggle mode={mode} onToggle={handleModeToggle} />
+                        <button
+                          onClick={() => setSelectedTopic(null)}
+                          className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                          title="Close drawer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Connection Cards Scroll view */}
+                    <div className="flex-grow overflow-y-auto p-6 space-y-6">
+                      {selectedTopic.connections.map((c, idx) => {
+                        const formattedConn = {
+                          id: c.id,
+                          field: c.field as any,
+                          analogy: c.analogy,
+                          explanation: c.explanation,
+                          funFact: c.fun_fact,
+                          emoji: c.emoji,
+                        };
+
+                        return (
+                          <ConnectionCard
+                            key={c.id}
+                            connection={formattedConn}
+                            mode={mode}
+                            index={idx}
+                            isSaved={true}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
-            
           </div>
         )}
       </main>

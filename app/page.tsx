@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
 import { TopicInput } from '@/components/TopicInput';
@@ -12,13 +12,15 @@ import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { NetworkBackground } from '@/components/NetworkBackground';
 import { SplashAnimation } from '@/components/SplashAnimation';
+import { AuthModal } from '@/components/AuthModal';
 import { ConnectionResponse, ViewMode } from '@/types';
-import { RotateCw, Compass, Network, Sparkles } from 'lucide-react';
+import { RotateCw, Compass, Network, Sparkles, Loader2 } from 'lucide-react';
 import { track } from '@vercel/analytics';
 
-export default function Home() {
+function ExplorerContent() {
   const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [topic, setTopic] = useState<string>('');
@@ -30,6 +32,32 @@ export default function Home() {
 
   const [savedConnectionIds, setSavedConnectionIds] = useState<string[]>([]);
   const [savingConnectionIds, setSavingConnectionIds] = useState<string[]>([]);
+
+  // Inline auth prompt state
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+
+  // Save Nudge Banner state
+  const [showNudge, setShowNudge] = useState<boolean>(false);
+
+  // Toast message state
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Initialize Nudge Visibility
+  useEffect(() => {
+    const hasSaved = localStorage.getItem('hasSavedBefore') === 'true';
+    const hasDismissed = localStorage.getItem('hasDismissedNudge') === 'true';
+    if (!hasSaved && !hasDismissed) {
+      setShowNudge(true);
+    }
+  }, []);
+
+  // Load search from URL query parameter (e.g. after login redirect)
+  useEffect(() => {
+    const urlTopic = searchParams.get('topic');
+    if (urlTopic && urlTopic.trim() && urlTopic !== topic) {
+      fetchConnections(urlTopic.trim());
+    }
+  }, [searchParams]);
 
   const fetchConnections = async (selectedTopic: string) => {
     if (isLoading || isDebouncing) return;
@@ -87,7 +115,7 @@ export default function Home() {
 
   const handleSaveConnection = async (connection: any) => {
     if (!session) {
-      router.push('/login');
+      setShowAuthModal(true);
       return;
     }
 
@@ -115,6 +143,17 @@ export default function Home() {
 
       // Add to saved
       setSavedConnectionIds((prev) => [...prev, connection.id]);
+
+      // Success feedback toast & nudge dismissal
+      const isFirstSave = localStorage.getItem('hasSavedBefore') !== 'true';
+      if (isFirstSave) {
+        localStorage.setItem('hasSavedBefore', 'true');
+        setShowNudge(false);
+        track('first_save_completed');
+      }
+      setToastMessage('Saved! View it in your Second Brain');
+      setTimeout(() => setToastMessage(null), 3500);
+
     } catch (err: any) {
       console.error('Failed to save connection:', err);
       setError(err.message || 'Failed to save to Second Brain.');
@@ -122,6 +161,11 @@ export default function Home() {
       // Remove from saving
       setSavingConnectionIds((prev) => prev.filter((id) => id !== connection.id));
     }
+  };
+
+  const handleDismissNudge = () => {
+    setShowNudge(false);
+    localStorage.setItem('hasDismissedNudge', 'true');
   };
 
   const isInteractionDisabled = isLoading || isDebouncing;
@@ -194,6 +238,22 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Value Proposition Save Nudge Banner */}
+              {showNudge && (
+                <div className="mb-6 p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl flex items-center justify-between gap-3 text-indigo-900 text-sm animate-fade-in-up">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <span>Save connections below to start building your personal knowledge graph!</span>
+                  </div>
+                  <button
+                    onClick={handleDismissNudge}
+                    className="text-indigo-600 hover:text-indigo-800 text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
+
               {/* Connection Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {data.connections.map((connection, idx) => (
@@ -239,6 +299,34 @@ export default function Home() {
           </div>
         </footer>
       </div>
+
+      {/* Lightweight Auth Modal Dialog */}
+      {showAuthModal && (
+        <AuthModal 
+          onClose={() => setShowAuthModal(false)} 
+          currentTopic={topic}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-indigo-600 text-white py-3 px-5 rounded-2xl shadow-xl flex items-center gap-2 animate-fade-in-up font-medium text-sm border border-indigo-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-200 animate-ping" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col justify-center items-center bg-[#F8FAFC]">
+        <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+      </div>
+    }>
+      <ExplorerContent />
+    </Suspense>
   );
 }

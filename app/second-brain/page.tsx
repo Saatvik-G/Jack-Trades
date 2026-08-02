@@ -200,16 +200,16 @@ export default function SecondBrainPage() {
                 <Compass className="w-7 h-7" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
-                Your Second Brain is Empty
+                Nothing saved yet
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                You haven't saved any cross-disciplinary topics yet. Go to the Explorer and save your first topic!
+                Try exploring a topic in the Explorer and bookmarking connection cards to build your brain.
               </p>
               <button
                 onClick={() => router.push('/')}
                 className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
               >
-                Go to Explorer
+                Try exploring a topic
               </button>
             </div>
           </div>
