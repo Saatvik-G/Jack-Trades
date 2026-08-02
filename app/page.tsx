@@ -177,7 +177,7 @@ function ExplorerContent() {
       {/* 2-second Splash Animation on First Load */}
       {showSplash && <SplashAnimation onComplete={() => setShowSplash(false)} />}
 
-      <div className="min-h-screen flex flex-col justify-between bg-[#F8FAFC] text-slate-900 font-sans relative overflow-hidden">
+      <div className="min-h-screen flex flex-col justify-between text-slate-900 font-sans relative overflow-hidden">
         {/* Subtle SVG constellation background pattern */}
         <NetworkBackground />
 

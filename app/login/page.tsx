@@ -68,7 +68,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden bg-[#F8FAFC]">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       <NetworkBackground />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center">

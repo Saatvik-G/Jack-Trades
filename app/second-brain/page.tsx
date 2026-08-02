@@ -174,7 +174,7 @@ export default function SecondBrainPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans relative overflow-hidden">
+      <div className="min-h-screen flex flex-col text-slate-900 font-sans relative overflow-hidden">
         <NetworkBackground />
         <main className="w-full max-w-7xl mx-auto px-4 pb-20 relative z-10 flex-grow flex flex-col">
           <Navbar />
@@ -192,7 +192,7 @@ export default function SecondBrainPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans relative overflow-hidden">
+    <div className="min-h-screen flex flex-col text-slate-900 font-sans relative overflow-hidden">
       <NetworkBackground />
 
       <main className="w-full max-w-7xl mx-auto px-4 pb-20 relative z-10 flex-grow flex flex-col">
