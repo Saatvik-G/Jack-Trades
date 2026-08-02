@@ -43,16 +43,6 @@ graph TD
 
 ---
 
-## 🎨 User Interface Preview
-
-Here is how the main areas of the application look, featuring translucent glassmorphism, responsive grid layouts, and visual toggles:
-
-| Explorer Search & Value Nudge | Credentials Log In Page | Mobile Accordion Fallback |
-| :---: | :---: | :---: |
-| ![Explorer Preview](./public/explorer-preview.jpg) | ![Login Preview](./public/login-preview.jpg) | ![Mobile Fallback](./public/mobile-preview.jpg) |
-
----
-
 ## 🌟 Key Features
 
 1. **AI Parallel Generator**: Enter any topic to reveal mechanism-level similarities. Avoids shallow puns in favor of deep structural optimization, feedback loops, and state spaces.
