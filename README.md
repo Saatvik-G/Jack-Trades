@@ -37,7 +37,7 @@ graph TD
     API_Conn -->|Streams structured parallel mapping schemas| Gemini
     API_Save -->|Registers user / inserts topic connection mapping| Supabase
     API_Topics -->|Retrieves nodes & link coordinates| Supabase
-    NextAuth -->|Interceptors for credentials & Google OAuth check| Supabase
+    NextAuth -->|Interceptors for credentials verification| Supabase
     UI -->|Fires signup, search, and graph page view logs| Vercel_Analytic
 ```
 
@@ -47,7 +47,7 @@ graph TD
 
 Here is how the main areas of the application look, featuring translucent glassmorphism, responsive grid layouts, and visual toggles:
 
-| Explorer Search & Value Nudge | Google OAuth & Credentials Log In | Mobile Accordion Graph Fallback |
+| Explorer Search & Value Nudge | Credentials Log In Page | Mobile Accordion Fallback |
 | :---: | :---: | :---: |
 | ![Explorer Preview](./public/explorer-preview.jpg) | ![Login Preview](./public/login-preview.jpg) | ![Mobile Fallback](./public/mobile-preview.jpg) |
 
@@ -59,7 +59,7 @@ Here is how the main areas of the application look, featuring translucent glassm
 2. **Serious & Playful Modes**:
    * **Serious**: Displays clean, rigorous mechanism parallels.
    * **Playful**: Highlights witty, screenshot-worthy fun facts with custom emojis and colorful callout boxes.
-3. **Google OAuth & Credentials Onboarding**: Instant sign-up/login via Google OAuth or standard email credentials.
+3. **Credentials Onboarding**: Secure, customized signup and sign-in credentials onboarding.
 4. **Interactive D3.js Knowledge Graph**: Beautiful, interactive force-directed network showing saved topics clustering around shared disciplines. Click nodes to open connection sidecards.
 5. **Mobile-Responsive Accordion Fallback**: If the viewport is smaller than `768px`, the D3 graph automatically degrades to an expandable accordion list of topics, guaranteeing accessibility on mobile devices.
 6. **Ambient Atmospheric Motion**: Subtly drifting low-opacity color blobs and spotlight card hovers created using Framer Motion spring physics.
@@ -74,7 +74,7 @@ Here is how the main areas of the application look, featuring translucent glassm
 │   ├── api/              # Route handlers for connection generation, saving, and auth
 │   ├── knowledge-graph/  # D3 force-directed visual canvas & mobile fallback
 │   ├── second-brain/     # Searchable/Filterable dashboard for saved topics
-│   ├── login/ & signup/  # Authentication forms with OAuth entrypoints
+│   ├── login/ & signup/  # Authentication forms
 │   ├── layout.tsx        # HTML wrapper containing Analytics and AmbientBlobs
 │   └── page.tsx          # Homepage Explorer & client-side search content
 ├── components/           # Reusable layout and animated components
@@ -153,9 +153,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_secret
 NEXTAUTH_SECRET=your_jwt_signing_secret
 NEXTAUTH_URL=http://localhost:3000
 
-# Google OAuth (For Google Login)
-GOOGLE_CLIENT_ID=your_google_oauth_client_id
-GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+# (NextAuth automatically handles secure credentials tokens)
 ```
 
 ### 3. Run development build
