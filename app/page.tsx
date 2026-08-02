@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { Navbar } from '@/components/Navbar';
 import { TopicInput } from '@/components/TopicInput';
@@ -13,6 +14,7 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import { NetworkBackground } from '@/components/NetworkBackground';
 import { SplashAnimation } from '@/components/SplashAnimation';
 import { AuthModal } from '@/components/AuthModal';
+import { MagneticButton } from '@/components/MagneticButton';
 import { ConnectionResponse, ViewMode } from '@/types';
 import { RotateCw, Compass, Network, Sparkles, Loader2 } from 'lucide-react';
 import { track } from '@vercel/analytics';
@@ -225,16 +227,16 @@ function ExplorerContent() {
                   <ModeToggle mode={mode} onToggle={handleModeToggle} />
 
                   {/* Regenerate Button */}
-                  <button
+                  <MagneticButton
                     type="button"
                     onClick={handleRegenerate}
                     disabled={isInteractionDisabled}
-                    className="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/90 font-medium text-xs flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer disabled:opacity-50"
+                    className="px-4 py-2 rounded-xl bg-white/70 backdrop-blur-xs hover:bg-slate-100 text-slate-700 border border-slate-200/90 font-medium text-xs flex items-center gap-1.5 transition-all shadow-xs disabled:opacity-50"
                     title="Generate a fresh set of connections with randomized fields"
                   >
                     <RotateCw className="w-3.5 h-3.5 text-indigo-600" />
                     <span>Regenerate</span>
-                  </button>
+                  </MagneticButton>
                 </div>
               </div>
 
@@ -255,7 +257,19 @@ function ExplorerContent() {
               )}
 
               {/* Connection Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <motion.div
+                variants={{
+                  hidden: {},
+                  show: {
+                    transition: {
+                      staggerChildren: 0.06
+                    }
+                  }
+                }}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
                 {data.connections.map((connection, idx) => (
                   <ConnectionCard
                     key={connection.id}
@@ -267,7 +281,7 @@ function ExplorerContent() {
                     isSaving={savingConnectionIds.includes(connection.id)}
                   />
                 ))}
-              </div>
+              </motion.div>
             </div>
           )}
 

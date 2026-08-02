@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'framer-motion';
+import { SpotlightCard } from './SpotlightCard';
 import { Connection, ViewMode } from '../types';
 import { Sparkles, ArrowRight, Waypoints, Bookmark, BookmarkCheck, Loader2 } from 'lucide-react';
 
@@ -30,6 +34,20 @@ const FIELD_ACCENTS: Record<string, { bg: string; text: string; border: string; 
   Ecology: { bg: 'bg-emerald-100/90', text: 'text-emerald-900', border: 'border-emerald-300', glow: 'from-emerald-600' },
 };
 
+export const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 90,
+      damping: 15,
+    },
+  },
+};
+
 export const ConnectionCard: React.FC<ConnectionCardProps> = ({
   connection,
   mode,
@@ -45,105 +63,110 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
     glow: 'from-indigo-500',
   };
 
-  const staggerClass = `stagger-${(index % 6) + 1}`;
-
   return (
-    <div className={`glass-node-card rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden animate-fade-in-up opacity-0 ${staggerClass}`}>
-      {/* Top glowing gradient line indicating structural connection */}
-      <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${accent.glow} to-slate-200 opacity-90`} />
+    <motion.div
+      variants={cardVariants}
+      className="h-full"
+    >
+      <SpotlightCard className="glass-node-card rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between group h-full relative">
+        {/* Top glowing gradient line indicating structural connection */}
+        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accent.glow} to-slate-200 opacity-90 z-10`} />
 
-      <div>
-        {/* Field Node Badge */}
-        <div className="flex items-center justify-between mb-4 pt-1">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-2xs ${accent.bg} ${accent.text} ${accent.border}`}>
-              {connection.field}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {mode === 'playful' && connection.emoji && (
-              <span className="text-2xl transform group-hover:scale-110 transition-transform duration-200 mr-0.5" title={connection.field}>
-                {connection.emoji}
-              </span>
-            )}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onSave) onSave();
-              }}
-              disabled={isSaving || isSaved}
-              className={`p-2 rounded-xl border transition-all cursor-pointer ${
-                isSaved
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
-                  : isSaving
-                  ? 'bg-slate-50 border-slate-200 text-slate-400 animate-pulse'
-                  : 'bg-white hover:bg-indigo-50 border-slate-200 hover:border-indigo-200 text-slate-400 hover:text-indigo-600'
-              }`}
-              title={isSaved ? 'Saved to Second Brain' : 'Save to Second Brain'}
-            >
-              {isSaving ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : isSaved ? (
-                <BookmarkCheck className="w-3.5 h-3.5 fill-emerald-600" />
-              ) : (
-                <Bookmark className="w-3.5 h-3.5" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* One-line Analogy */}
-        <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors font-display leading-snug">
-          {connection.analogy}
-        </h3>
-
-        {/* Dynamic content rendering based on mode */}
-        {mode === 'serious' ? (
-          /* SERIOUS MODE: Structural Explanation Leads */
-          <div className="space-y-4">
-            <p className="text-slate-700 text-sm sm:text-base leading-relaxed font-normal">
-              {connection.explanation}
-            </p>
-            <div className="pt-3 border-t border-slate-100 flex items-start gap-2 text-xs text-slate-500">
-              <span className="font-semibold text-slate-600 shrink-0">Fun fact:</span>
-              <span className="italic">{connection.funFact}</span>
-            </div>
-          </div>
-        ) : (
-          /* PLAYFUL MODE: Fun Fact Prominent Callout */
-          <div className="space-y-4">
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-violet-50/80 border border-indigo-100 text-indigo-950 text-sm font-medium leading-relaxed shadow-inner">
-              <div className="flex items-center gap-1.5 mb-1 text-indigo-700">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span className="font-semibold text-xs uppercase tracking-wider">
-                  Screenshot-Worthy Fact
+        <div className="flex-grow flex flex-col justify-between h-full">
+          <div>
+            {/* Field Node Badge */}
+            <div className="flex items-center justify-between mb-4 pt-1">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-2xs ${accent.bg} ${accent.text} ${accent.border}`}>
+                  {connection.field}
                 </span>
               </div>
-              {connection.funFact}
+
+              <div className="flex items-center gap-2 z-20">
+                {mode === 'playful' && connection.emoji && (
+                  <span className="text-2xl transform group-hover:scale-110 transition-transform duration-200 mr-0.5" title={connection.field}>
+                    {connection.emoji}
+                  </span>
+                )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onSave) onSave();
+                  }}
+                  disabled={isSaving || isSaved}
+                  className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                    isSaved
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                      : isSaving
+                      ? 'bg-slate-50 border-slate-200 text-slate-400 animate-pulse'
+                      : 'bg-white hover:bg-indigo-50 border-slate-200 hover:border-indigo-200 text-slate-400 hover:text-indigo-600'
+                  }`}
+                  title={isSaved ? 'Saved to Second Brain' : 'Save to Second Brain'}
+                >
+                  {isSaving ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : isSaved ? (
+                    <BookmarkCheck className="w-3.5 h-3.5 fill-emerald-600" />
+                  ) : (
+                    <Bookmark className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              </div>
             </div>
 
-            <p className="text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-3">
-              <span className="font-semibold text-slate-700 block text-xs uppercase tracking-wider mb-1">
-                Structural Mechanism:
-              </span>
-              {connection.explanation}
-            </p>
-          </div>
-        )}
-      </div>
+            {/* One-line Analogy */}
+            <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors font-display leading-snug">
+              {connection.analogy}
+            </h3>
 
-      {/* Domain travel footer tag */}
-      <div className="mt-4 pt-3 border-t border-slate-100/80 flex items-center justify-between text-[11px] text-slate-400 font-medium">
-        <span className="flex items-center gap-1">
-          <Waypoints className="w-3 h-3 text-indigo-500" />
-          Cross-Domain Parallel
-        </span>
-        <span className="group-hover:text-indigo-600 transition-colors flex items-center gap-0.5">
-          Read connection <ArrowRight className="w-3 h-3 ml-0.5 group-hover:translate-x-0.5 transition-transform" />
-        </span>
-      </div>
-    </div>
+            {/* Dynamic content rendering based on mode */}
+            {mode === 'serious' ? (
+              /* SERIOUS MODE: Structural Explanation Leads */
+              <div className="space-y-4">
+                <p className="text-slate-700 text-sm sm:text-base leading-relaxed font-normal">
+                  {connection.explanation}
+                </p>
+                <div className="pt-3 border-t border-slate-100 flex items-start gap-2 text-xs text-slate-500">
+                  <span className="font-semibold text-slate-600 shrink-0">Fun fact:</span>
+                  <span className="italic">{connection.funFact}</span>
+                </div>
+              </div>
+            ) : (
+              /* PLAYFUL MODE: Fun Fact Prominent Callout */
+              <div className="space-y-4">
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-violet-50/80 border border-indigo-100 text-indigo-950 text-sm font-medium leading-relaxed shadow-inner">
+                  <div className="flex items-center gap-1.5 mb-1 text-indigo-700">
+                    <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '3s' }} />
+                    <span className="font-semibold text-xs uppercase tracking-wider">
+                      Screenshot-Worthy Fact
+                    </span>
+                  </div>
+                  {connection.funFact}
+                </div>
+
+                <p className="text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-3">
+                  <span className="font-semibold text-slate-700 block text-xs uppercase tracking-wider mb-1">
+                    Structural Mechanism:
+                  </span>
+                  {connection.explanation}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Domain travel footer tag */}
+          <div className="mt-4 pt-3 border-t border-slate-100/80 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+            <span className="flex items-center gap-1">
+              <Waypoints className="w-3 h-3 text-indigo-500" />
+              Cross-Domain Parallel
+            </span>
+            <span className="group-hover:text-indigo-600 transition-colors flex items-center gap-0.5">
+              Read connection <ArrowRight className="w-3 h-3 ml-0.5 group-hover:translate-x-0.5 transition-transform" />
+            </span>
+          </div>
+        </div>
+      </SpotlightCard>
+    </motion.div>
   );
 };

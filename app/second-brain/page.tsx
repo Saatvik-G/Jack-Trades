@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/Navbar';
 import { NetworkBackground } from '@/components/NetworkBackground';
 import { ConnectionCard } from '@/components/ConnectionCard';
@@ -21,6 +22,28 @@ import {
   Brain,
   ChevronRight
 } from 'lucide-react';
+
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.04,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
 
 interface SavedConnection {
   id: string;
@@ -266,7 +289,12 @@ export default function SecondBrainPage() {
               </div>
 
               {/* Topics List */}
-              <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="space-y-2 max-h-[60vh] overflow-y-auto pr-1"
+              >
                 {filteredTopics.length === 0 ? (
                   <div className="text-center py-8 text-slate-500 text-sm border border-dashed border-slate-200 rounded-2xl bg-white/50">
                     No matching topics found.
@@ -281,8 +309,9 @@ export default function SecondBrainPage() {
                     });
 
                     return (
-                      <div
+                      <motion.div
                         key={item.id}
+                        variants={itemVariants}
                         onClick={() => setSelectedTopic(item)}
                         className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between group relative overflow-hidden ${
                           isSelected
@@ -326,56 +355,74 @@ export default function SecondBrainPage() {
                             isSelected ? 'translate-x-0.5' : 'text-slate-400 group-hover:translate-x-0.5'
                           }`} />
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })
                 )}
-              </div>
+              </motion.div>
 
             </div>
 
             {/* Right Column: Connection Cards (7 cols) */}
             <div className="lg:col-span-7">
-              {selectedTopic ? (
-                <div className="space-y-4 animate-fade-in-up">
-                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex justify-between items-center">
-                    <h2 className="font-display font-bold text-lg text-slate-900 capitalize">
-                      {selectedTopic.title} Connections
-                    </h2>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
-                      {selectedTopic.connections.length} Saved Parallel{selectedTopic.connections.length > 1 ? 's' : ''}
-                    </span>
-                  </div>
+              <AnimatePresence mode="wait">
+                {selectedTopic ? (
+                  <motion.div
+                    key={selectedTopic.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                    className="space-y-4"
+                  >
+                    <div className="p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-slate-200/80 shadow-xs flex justify-between items-center">
+                      <h2 className="font-display font-bold text-lg text-slate-900 capitalize">
+                        {selectedTopic.title} Connections
+                      </h2>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
+                        {selectedTopic.connections.length} Saved Parallel{selectedTopic.connections.length > 1 ? 's' : ''}
+                      </span>
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {selectedTopic.connections.map((c, idx) => {
-                      // Adapt schema connection to fit ConnectionCard interface expects { funFact, emoji }
-                      const formattedConn = {
-                        id: c.id,
-                        field: c.field as any,
-                        analogy: c.analogy,
-                        explanation: c.explanation,
-                        funFact: c.fun_fact,
-                        emoji: c.emoji,
-                      };
+                    <motion.div
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="show"
+                      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                    >
+                      {selectedTopic.connections.map((c, idx) => {
+                        // Adapt schema connection to fit ConnectionCard interface expects { funFact, emoji }
+                        const formattedConn = {
+                          id: c.id,
+                          field: c.field as any,
+                          analogy: c.analogy,
+                          explanation: c.explanation,
+                          funFact: c.fun_fact,
+                          emoji: c.emoji,
+                        };
 
-                      return (
-                        <ConnectionCard
-                          key={c.id}
-                          connection={formattedConn}
-                          mode={mode}
-                          index={idx}
-                          isSaved={true} // It is already saved!
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-16 text-slate-400 border border-dashed border-slate-200 rounded-3xl bg-white/50">
-                  Select a topic from the left to view connections.
-                </div>
-              )}
+                        return (
+                          <ConnectionCard
+                            key={c.id}
+                            connection={formattedConn}
+                            mode={mode}
+                            index={idx}
+                            isSaved={true} // It is already saved!
+                          />
+                        );
+                      })}
+                    </motion.div>
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-16 text-slate-400 border border-dashed border-slate-200 rounded-3xl bg-white/50"
+                  >
+                    Select a topic from the left to view connections.
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
           </div>

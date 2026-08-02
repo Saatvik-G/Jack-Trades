@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/Navbar';
 import { NetworkBackground } from '@/components/NetworkBackground';
 import { ConnectionCard } from '@/components/ConnectionCard';
@@ -10,6 +11,28 @@ import { ModeToggle } from '@/components/ModeToggle';
 import { ViewMode } from '@/types';
 import { track } from '@vercel/analytics';
 import * as d3 from 'd3';
+
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
 import { 
   Network, 
   Brain, 
@@ -448,7 +471,7 @@ export default function KnowledgeGraphPage() {
 
             {isMobile && activeView === 'list' ? (
               /* MOBILE ACCORDION LIST FALLBACK */
-              <div className="space-y-4 max-w-2xl mx-auto w-full animate-fade-in-up">
+              <div className="space-y-4 max-w-2xl mx-auto w-full">
                 <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex justify-between items-center">
                   <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Saved Topics</span>
                   <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
@@ -456,12 +479,18 @@ export default function KnowledgeGraphPage() {
                   </span>
                 </div>
 
-                <div className="space-y-3">
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="space-y-3"
+                >
                   {topics.map((item) => {
                     const isExpanded = selectedTopic?.id === item.id;
                     return (
-                      <div 
-                        key={item.id} 
+                      <motion.div 
+                        key={item.id}
+                        variants={itemVariants}
                         className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xs transition-all duration-200"
                       >
                         <button
@@ -472,13 +501,13 @@ export default function KnowledgeGraphPage() {
                             <span className="text-xl shrink-0">{item.connections[0]?.emoji || '💡'}</span>
                             <span className="text-slate-900">{item.title}</span>
                           </span>
-                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600">
+                          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600">
                             {item.connections.length} fields
                           </span>
                         </button>
 
                         {isExpanded && (
-                          <div className="border-t border-slate-100 bg-slate-50/20 p-5 space-y-6 animate-fade-in-up">
+                          <div className="border-t border-slate-100 bg-slate-50/20 p-5 space-y-6">
                             <div className="flex justify-end">
                               <ModeToggle mode={mode} onToggle={handleModeToggle} />
                             </div>
@@ -503,10 +532,10 @@ export default function KnowledgeGraphPage() {
                             })}
                           </div>
                         )}
-                      </div>
+                      </motion.div>
                     );
                   })}
-                </div>
+                </motion.div>
               </div>
             ) : (
               /* D3 GRAPH VIEW */
@@ -552,56 +581,64 @@ export default function KnowledgeGraphPage() {
                 </div>
 
                 {/* Slide-out Topic Connections Panel (Sidebar Overlay) */}
-                {selectedTopic && !isMobile && (
-                  <div className="fixed inset-y-0 right-0 z-50 w-full sm:max-w-lg bg-white/95 backdrop-blur-lg shadow-2xl border-l border-slate-200 flex flex-col animate-fade-in-up">
-                    {/* Panel Header */}
-                    <div className="p-6 border-b border-slate-200 flex items-center justify-between">
-                      <div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 block mb-0.5">
-                          Saved Connection Map
-                        </span>
-                        <h2 className="text-2xl font-bold text-slate-950 font-display capitalize">
-                          {selectedTopic.title}
-                        </h2>
+                <AnimatePresence>
+                  {selectedTopic && !isMobile && (
+                    <motion.div
+                      initial={{ x: '100%' }}
+                      animate={{ x: 0 }}
+                      exit={{ x: '100%' }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+                      className="fixed inset-y-0 right-0 z-50 w-full sm:max-w-lg bg-white/90 backdrop-blur-lg shadow-2xl border-l border-slate-200/80 flex flex-col"
+                    >
+                      {/* Panel Header */}
+                      <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 block mb-0.5">
+                            Saved Connection Map
+                          </span>
+                          <h2 className="text-2xl font-bold text-slate-950 font-display capitalize">
+                            {selectedTopic.title}
+                          </h2>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <ModeToggle mode={mode} onToggle={handleModeToggle} />
+                          <button
+                            onClick={() => setSelectedTopic(null)}
+                            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                            title="Close drawer"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <ModeToggle mode={mode} onToggle={handleModeToggle} />
-                        <button
-                          onClick={() => setSelectedTopic(null)}
-                          className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-                          title="Close drawer"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
+                      {/* Connection Cards Scroll view */}
+                      <div className="flex-grow overflow-y-auto p-6 space-y-6">
+                        {selectedTopic.connections.map((c, idx) => {
+                          const formattedConn = {
+                            id: c.id,
+                            field: c.field as any,
+                            analogy: c.analogy,
+                            explanation: c.explanation,
+                            funFact: c.fun_fact,
+                            emoji: c.emoji,
+                          };
+
+                          return (
+                            <ConnectionCard
+                              key={c.id}
+                              connection={formattedConn}
+                              mode={mode}
+                              index={idx}
+                              isSaved={true}
+                            />
+                          );
+                        })}
                       </div>
-                    </div>
-
-                    {/* Connection Cards Scroll view */}
-                    <div className="flex-grow overflow-y-auto p-6 space-y-6">
-                      {selectedTopic.connections.map((c, idx) => {
-                        const formattedConn = {
-                          id: c.id,
-                          field: c.field as any,
-                          analogy: c.analogy,
-                          explanation: c.explanation,
-                          funFact: c.fun_fact,
-                          emoji: c.emoji,
-                        };
-
-                        return (
-                          <ConnectionCard
-                            key={c.id}
-                            connection={formattedConn}
-                            mode={mode}
-                            index={idx}
-                            isSaved={true}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )}
           </div>
