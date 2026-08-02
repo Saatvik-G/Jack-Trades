@@ -1,82 +1,168 @@
-# Jack&Trades — Cross-Discipline Explorer
+# Jack&Trades — The Polymath Engine 🧠
 
 > *"A jack of all trades is a master of none, but oftentimes better than a master of one."*
 
-**Jack&Trades** is an AI-powered single-page web app that reveals non-obvious, mechanism-level structural connections between any user-input topic and 4 to 6 distinct disciplines (Science, Mathematics, Psychology, Philosophy, History, Art, Economics, Design, Biology, Music, Architecture, and Game Theory).
+**Jack&Trades** is an AI-powered cross-disciplinary knowledge explorer that helps you find deep, structural parallels between any concept (e.g. *Recursion*, *Supply & Demand*, *Photosynthesis*) and 16+ distinct fields of human thought (Science, Mathematics, Psychology, Philosophy, Economics, Art, Game Theory, Design, Music, Biology, and more).
+
+---
+
+## 🗺️ System Architecture
+
+The following diagram maps out how the front-end router, session handlers, Gemini AI endpoints, and the Supabase database interact to discover, stream, and save cross-disciplinary similarities:
+
+```mermaid
+graph TD
+    User([User Browser])
+    
+    subgraph "Next.js App Layer (Client & Server)"
+        UI[React Client views / Explorer Pages]
+        NextAuth[NextAuth.js Session Handler]
+        API_Conn[API Endpoint: /api/connections]
+        API_Save[API Endpoint: /api/topics/save]
+        API_Topics[API Endpoint: /api/topics]
+    end
+
+    subgraph "Third-Party Services"
+        Gemini[Google Gemini AI Engine]
+        Supabase[(Supabase PostgreSQL Database)]
+        Vercel_Analytic[Vercel Event Analytics]
+    end
+
+    User -->|Search query, mode toggles, graph navigation| UI
+    UI -->|Manages session / credentials authentication| NextAuth
+    UI -->|Requests parallel similarity sets| API_Conn
+    UI -->|Saves single structural connections| API_Save
+    UI -->|Queries all saved topics & badges| API_Topics
+    
+    API_Conn -->|Streams structured parallel mapping schemas| Gemini
+    API_Save -->|Registers user / inserts topic connection mapping| Supabase
+    API_Topics -->|Retrieves nodes & link coordinates| Supabase
+    NextAuth -->|Interceptors for credentials & Google OAuth check| Supabase
+    UI -->|Fires signup, search, and graph page view logs| Vercel_Analytic
+```
+
+---
+
+## 🎨 User Interface Preview
+
+Here is how the main areas of the application look, featuring translucent glassmorphism, responsive grid layouts, and visual toggles:
+
+| Explorer Search & Value Nudge | Google OAuth & Credentials Log In | Mobile Accordion Graph Fallback |
+| :---: | :---: | :---: |
+| ![Explorer Preview](./public/explorer-preview.jpg) | ![Login Preview](./public/login-preview.jpg) | ![Mobile Fallback](./public/mobile-preview.jpg) |
 
 ---
 
 ## 🌟 Key Features
 
-- **Topic Exploration**: Enter any concept, technique, or skill (e.g., *Gradient Descent*, *Recursion*, *Supply & Demand*, *Photosynthesis*) to uncover deep cross-disciplinary analogies.
-- **Mechanism-Level Rigor**: Avoids shallow wordplay by illuminating shared underlying structures, feedback loops, state spaces, and optimization dynamics.
-- **Serious / Playful View Toggle**:
-  - **Serious Mode**: Structural explanation is front and center; fun facts are subdued.
-  - **Playful Mode**: Highlights screenshot-worthy, witty fun-facts with visual callouts and emojis while preserving full structural rigor.
-- **Instant Regeneration**: One-click regeneration for fresh perspective sets on the same topic.
-- **User Authentication**: Secure credentials-based authentication via **NextAuth.js** to manage personal polymath profiles.
-- **Personal Second Brain**: Save interesting topic connections to your account and browse them through a searchable, filterable, and sortable dashboard.
-- **Interactive Knowledge Graph**: Visualize saved topics and their connected fields in an interactive D3-force network graph. Topics act as central nodes that cluster around shared disciplines, letting you trace common patterns. Click nodes to open quick-view side panels.
+1. **AI Parallel Generator**: Enter any topic to reveal mechanism-level similarities. Avoids shallow puns in favor of deep structural optimization, feedback loops, and state spaces.
+2. **Serious & Playful Modes**:
+   * **Serious**: Displays clean, rigorous mechanism parallels.
+   * **Playful**: Highlights witty, screenshot-worthy fun facts with custom emojis and colorful callout boxes.
+3. **Google OAuth & Credentials Onboarding**: Instant sign-up/login via Google OAuth or standard email credentials.
+4. **Interactive D3.js Knowledge Graph**: Beautiful, interactive force-directed network showing saved topics clustering around shared disciplines. Click nodes to open connection sidecards.
+5. **Mobile-Responsive Accordion Fallback**: If the viewport is smaller than `768px`, the D3 graph automatically degrades to an expandable accordion list of topics, guaranteeing accessibility on mobile devices.
+6. **Ambient Atmospheric Motion**: Subtly drifting low-opacity color blobs and spotlight card hovers created using Framer Motion spring physics.
+7. **Keep-Alive Scheduler**: Integrates `/api/auth/session` ping targets compatible with UptimeRobot to keep free-tier databases warm.
 
 ---
 
-## 🖼️ Preview
+## 📁 Repository Structure
 
-*(Screenshot Placeholder)*
+```text
+├── app/                  # Next.js App Router Pages
+│   ├── api/              # Route handlers for connection generation, saving, and auth
+│   ├── knowledge-graph/  # D3 force-directed visual canvas & mobile fallback
+│   ├── second-brain/     # Searchable/Filterable dashboard for saved topics
+│   ├── login/ & signup/  # Authentication forms with OAuth entrypoints
+│   ├── layout.tsx        # HTML wrapper containing Analytics and AmbientBlobs
+│   └── page.tsx          # Homepage Explorer & client-side search content
+├── components/           # Reusable layout and animated components
+│   ├── AmbientBlobs.tsx  # Drifting background colored blobs
+│   ├── SpotlightCard.tsx # Cursor spotlight hover tracker card wrapper
+│   ├── MagneticButton.tsx# Spring physics magnetic button wrapper
+│   ├── Navbar.tsx        # Persistent responsive header navbar
+│   └── ConnectionCard.tsx# The card renderer for Serious/Playful mode parallels
+├── lib/                  # Library utilities (NextAuth configuration, Supabase client)
+├── supabase/             # SQL schema migrations and initial DDL definitions
+├── public/               # Static preview assets, favicon icons, and preview card graphics
+├── types/                # TypeScript core type interfaces
+└── package.json          # Project script commands and package dependencies
+```
 
 ---
 
-## 🛠️ Tech Stack
+## 🗄️ Database Schema
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router, React 19)
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
-- **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
-- **Visualization**: [D3.js](https://d3js.org/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **AI Engine**: [Google Gemini API](https://ai.google.dev/) (`gemini-2.5-flash`)
-- **Icons**: [Lucide React](https://lucide.dev/)
+Jack&Trades uses **Supabase (PostgreSQL)**. Execute the SQL schema defined in [`supabase/schema.sql`](file:///d:/Projects/Jack&Trade/supabase/schema.sql) in your SQL editor. The schema outlines three tables:
+
+### 1. `users` Table
+Holds account logins (both credentials-based and OAuth-based).
+| Column | Type | Constraints |
+| :--- | :--- | :--- |
+| `id` | UUID | PRIMARY KEY, Default: random_uuid() |
+| `email` | VARCHAR | UNIQUE, NOT NULL |
+| `password_hash` | VARCHAR | NOT NULL (oauth accounts get unique placeholder keys) |
+| `created_at` | TIMESTAMP | DEFAULT: NOW() |
+
+### 2. `topics` Table
+Holds search categories created by users.
+| Column | Type | Constraints |
+| :--- | :--- | :--- |
+| `id` | UUID | PRIMARY KEY, Default: random_uuid() |
+| `user_id` | UUID | REFERENCES `users(id)` ON DELETE CASCADE |
+| `title` | VARCHAR | NOT NULL |
+| `created_at` | TIMESTAMP | DEFAULT: NOW() |
+| **Unique Constraint** | `(user_id, title)` | Prevents duplicate topics for a single user |
+
+### 3. `connections` Table
+Holds individual saved cards/similarities nested under a topic.
+| Column | Type | Constraints |
+| :--- | :--- | :--- |
+| `id` | UUID | PRIMARY KEY, Default: random_uuid() |
+| `topic_id` | UUID | REFERENCES `topics(id)` ON DELETE CASCADE |
+| `field` | VARCHAR | NOT NULL |
+| `analogy` | TEXT | NOT NULL |
+| `explanation` | TEXT | NOT NULL |
+| `fun_fact` | TEXT | NOT NULL |
+| `emoji` | VARCHAR | NOT NULL |
+| `created_at` | TIMESTAMP | DEFAULT: NOW() |
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started Locally
 
-### 1. Clone the repository
+### 1. Clone & Install
 ```bash
 git clone https://github.com/Saatvik-G/Jack-Trades.git
 cd Jack-Trades
-```
-
-### 2. Install dependencies
-```bash
 npm install
 ```
 
-### 3. Setup Database Schema
-Execute the SQL script in [`supabase/schema.sql`](file:///d:/Projects/Jack&Trade/supabase/schema.sql) in your **Supabase SQL Editor** to create the tables (`users`, `topics`, `connections`) and their indices.
-
-### 4. Configure Environment Variables
-Create a `.env.local` file in the root directory:
+### 2. Configure environment variables
+Create a `.env.local` file in your root folder:
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
+# Gemini API Key
+GEMINI_API_KEY=your_gemini_api_key
 
-# NextAuth Configuration
+# Supabase database keys
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_secret
+
+# NextAuth secrets
+NEXTAUTH_SECRET=your_jwt_signing_secret
 NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret_here
 
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url_here
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+# Google OAuth (For Google Login)
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
 ```
 
-> ⚠️ **Note**: Never commit `.env.local` or expose your API keys/secrets. It is automatically excluded via `.gitignore`.
-
-### 5. Run Development Server
+### 3. Run development build
 ```bash
 npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to start exploring.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ---
 
