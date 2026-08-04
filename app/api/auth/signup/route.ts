@@ -44,8 +44,8 @@ export async function POST(req: Request) {
     }
 
     // Hash password
-    const salt = bcrypt.genSaltSync(10);
-    const passwordHash = bcrypt.hashSync(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
 
     // Insert user into Supabase
     const { data: newUser, error: insertError } = await supabase
