@@ -20,7 +20,12 @@ import {
   Compass, 
   Loader2, 
   Brain,
-  ChevronRight
+  ChevronRight,
+  Lightbulb,
+  Target,
+  ArrowRight,
+  GitMerge,
+  BookOpen
 } from 'lucide-react';
 
 const containerVariants = {
@@ -61,16 +66,34 @@ interface SavedTopic {
   connections: SavedConnection[];
 }
 
+interface SavedIdea {
+  id: string;
+  title: string;
+  description: string;
+  why_non_obvious: string;
+  combined_topics: string[];
+  created_at: string;
+}
+
 export default function SecondBrainPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Tab State
+  const [activeTab, setActiveTab] = useState<'connections' | 'ideas'>('connections');
+
+  // Connections Data
   const [topics, setTopics] = useState<SavedTopic[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<SavedTopic | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isLoadingTopics, setIsLoadingTopics] = useState<boolean>(true);
+  const [isDeletingTopic, setIsDeletingTopic] = useState<string | null>(null);
+
+  // Ideas Data
+  const [ideas, setIdeas] = useState<SavedIdea[]>([]);
+  const [isLoadingIdeas, setIsLoadingIdeas] = useState<boolean>(true);
+  const [isDeletingIdea, setIsDeletingIdea] = useState<string | null>(null);
   
-  // Search, filter, and sorting state
+  // Search, filter, and sorting state for connections
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedField, setSelectedField] = useState<string>('All Fields');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'alphabetical'>('newest');
@@ -90,7 +113,7 @@ export default function SecondBrainPage() {
 
   // Load saved topics
   const fetchTopics = async () => {
-    setIsLoading(true);
+    setIsLoadingTopics(true);
     try {
       const res = await fetch('/api/topics');
       if (!res.ok) throw new Error('Failed to load topics.');
@@ -104,26 +127,42 @@ export default function SecondBrainPage() {
     } catch (err) {
       console.error('Error fetching saved topics:', err);
     } finally {
-      setIsLoading(false);
+      setIsLoadingTopics(false);
+    }
+  };
+
+  // Load saved ideas
+  const fetchIdeas = async () => {
+    setIsLoadingIdeas(true);
+    try {
+      const res = await fetch('/api/ideas');
+      if (!res.ok) throw new Error('Failed to load ideas.');
+      const data = await res.json();
+      setIdeas(data.ideas || []);
+    } catch (err) {
+      console.error('Error fetching saved ideas:', err);
+    } finally {
+      setIsLoadingIdeas(false);
     }
   };
 
   useEffect(() => {
     if (status === 'authenticated') {
       fetchTopics();
+      fetchIdeas();
     }
   }, [status]);
 
-  // Delete handler
+  // Delete topic handler
   const handleDeleteTopic = async (topicId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isDeleting) return;
+    if (isDeletingTopic) return;
 
     if (!confirm('Are you sure you want to delete this topic from your Second Brain?')) {
       return;
     }
 
-    setIsDeleting(topicId);
+    setIsDeletingTopic(topicId);
     try {
       const res = await fetch(`/api/topics?id=${topicId}`, {
         method: 'DELETE',
@@ -131,11 +170,9 @@ export default function SecondBrainPage() {
 
       if (!res.ok) throw new Error('Failed to delete.');
 
-      // Remove from list
       const updatedTopics = topics.filter((t) => t.id !== topicId);
       setTopics(updatedTopics);
 
-      // Adjust selected topic if it was deleted
       if (selectedTopic?.id === topicId) {
         setSelectedTopic(updatedTopics.length > 0 ? updatedTopics[0] : null);
       }
@@ -143,7 +180,33 @@ export default function SecondBrainPage() {
       console.error('Error deleting topic:', err);
       alert('Failed to delete topic. Please try again.');
     } finally {
-      setIsDeleting(null);
+      setIsDeletingTopic(null);
+    }
+  };
+
+  // Delete idea handler
+  const handleDeleteIdea = async (ideaId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isDeletingIdea) return;
+
+    if (!confirm('Are you sure you want to delete this project idea from your Second Brain?')) {
+      return;
+    }
+
+    setIsDeletingIdea(ideaId);
+    try {
+      const res = await fetch(`/api/ideas?id=${ideaId}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) throw new Error('Failed to delete idea.');
+
+      setIdeas(prev => prev.filter(idea => idea.id !== ideaId));
+    } catch (err) {
+      console.error('Error deleting idea:', err);
+      alert('Failed to delete idea.');
+    } finally {
+      setIsDeletingIdea(null);
     }
   };
 
@@ -154,7 +217,7 @@ export default function SecondBrainPage() {
     )
   ).sort();
 
-  // Filter and sort logic
+  // Filter and sort logic for topics
   const filteredTopics = topics
     .filter((t) => {
       const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -172,7 +235,9 @@ export default function SecondBrainPage() {
       return a.title.localeCompare(b.title);
     });
 
-  if (status === 'loading' || isLoading) {
+  const isGlobalLoading = status === 'loading' || (activeTab === 'connections' ? isLoadingTopics : isLoadingIdeas);
+
+  if (isGlobalLoading) {
     return (
       <div className="min-h-screen flex flex-col text-slate-900 font-sans relative overflow-hidden">
         <NetworkBackground />
@@ -206,226 +271,350 @@ export default function SecondBrainPage() {
               My Second Brain
             </h1>
             <p className="text-slate-500 text-sm mt-1">
-              Browse, filter, and review your collected cross-disciplinary connections.
+              Browse, filter, and review your collected cross-disciplinary connections and project blueprints.
             </p>
           </div>
 
-          {topics.length > 0 && selectedTopic && (
+          {activeTab === 'connections' && topics.length > 0 && selectedTopic && (
             <ModeToggle mode={mode} onToggle={handleModeToggle} />
           )}
         </div>
 
-        {topics.length === 0 ? (
-          /* Empty state */
-          <div className="flex-grow flex items-center justify-center py-12">
-            <div className="w-full max-w-md text-center p-8 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
-                <Compass className="w-7 h-7" />
+        {/* Tab Buttons Toggle */}
+        <div className="flex gap-2 border-b border-slate-200/50 pb-4 mb-6">
+          <button
+            onClick={() => setActiveTab('connections')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+              activeTab === 'connections'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'bg-white hover:bg-slate-100 text-slate-655 border border-slate-200/80'
+            }`}
+          >
+            Saved Connections ({topics.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('ideas')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+              activeTab === 'ideas'
+                ? 'bg-indigo-600 text-white shadow-sm'
+                : 'bg-white hover:bg-slate-100 text-slate-655 border border-slate-200/80'
+            }`}
+          >
+            Saved Project Ideas ({ideas.length})
+          </button>
+        </div>
+
+        {/* Connections Tab Content */}
+        {activeTab === 'connections' && (
+          topics.length === 0 ? (
+            /* Connections Empty state */
+            <div className="flex-grow flex items-center justify-center py-12">
+              <div className="w-full max-w-md text-center p-8 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
+                  <Compass className="w-7 h-7" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
+                  No connections saved yet
+                </h3>
+                <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                  Try exploring a topic in the Explorer and bookmarking connection cards to build your brain.
+                </p>
+                <button
+                  onClick={() => router.push('/')}
+                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  Try exploring a topic
+                </button>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
-                Nothing saved yet
-              </h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                Try exploring a topic in the Explorer and bookmarking connection cards to build your brain.
-              </p>
-              <button
-                onClick={() => router.push('/')}
-                className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
-              >
-                Try exploring a topic
-              </button>
             </div>
-          </div>
-        ) : (
-          /* Dashboard Layout */
-          <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* Left Column: Topics List, Search, & Filters (5 cols) */}
-            <div className="lg:col-span-5 space-y-4">
-              
-              {/* Search & Filter Controls Panel */}
-              <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search topics..."
-                    className="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 text-sm"
-                  />
-                </div>
-
-                <div className="flex gap-2">
-                  {/* Field Filter */}
-                  <div className="flex-1 relative">
-                    <Filter className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-400" />
-                    <select
-                      value={selectedField}
-                      onChange={(e) => setSelectedField(e.target.value)}
-                      className="w-full pl-8 pr-2 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-semibold text-slate-600 appearance-none"
-                    >
-                      <option value="All Fields">All Fields</option>
-                      {allFields.map((f) => (
-                        <option key={f} value={f}>{f}</option>
-                      ))}
-                    </select>
+          ) : (
+            /* Connections Dashboard Layout */
+            <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Topics List, Search, & Filters */}
+              <div className="lg:col-span-5 space-y-4">
+                {/* Search & Filter Controls Panel */}
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search topics..."
+                      className="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 text-sm"
+                    />
                   </div>
 
-                  {/* Sort Order */}
-                  <div className="flex-1 relative">
-                    <ArrowUpDown className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-400" />
-                    <select
-                      value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value as any)}
-                      className="w-full pl-8 pr-2 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-semibold text-slate-600 appearance-none"
-                    >
-                      <option value="newest">Newest Saved</option>
-                      <option value="oldest">Oldest Saved</option>
-                      <option value="alphabetical">Alphabetical</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Topics List */}
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-                className="space-y-2 max-h-[60vh] overflow-y-auto pr-1"
-              >
-                {filteredTopics.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500 text-sm border border-dashed border-slate-200 rounded-2xl bg-white/50">
-                    No matching topics found.
-                  </div>
-                ) : (
-                  filteredTopics.map((item) => {
-                    const isSelected = selectedTopic?.id === item.id;
-                    const formattedDate = new Date(item.created_at).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    });
-
-                    return (
-                      <motion.div
-                        key={item.id}
-                        variants={itemVariants}
-                        onClick={() => setSelectedTopic(item)}
-                        className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between group relative overflow-hidden ${
-                          isSelected
-                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                            : 'bg-white text-slate-800 border-slate-200 hover:border-indigo-300 hover:shadow-xs'
-                        }`}
+                  <div className="flex gap-2">
+                    {/* Field Filter */}
+                    <div className="flex-1 relative">
+                      <Filter className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-400" />
+                      <select
+                        value={selectedField}
+                        onChange={(e) => setSelectedField(e.target.value)}
+                        className="w-full pl-8 pr-2 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-semibold text-slate-600 appearance-none"
                       >
-                        <div className="space-y-1">
-                          <h3 className="font-display font-bold text-base capitalize">
-                            {item.title}
-                          </h3>
-                          <div className="flex items-center gap-3 text-[11px] font-medium opacity-80">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {formattedDate}
-                            </span>
-                            <span>•</span>
-                            <span>{item.connections.length} fields</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => handleDeleteTopic(item.id, e)}
-                            disabled={isDeleting === item.id}
-                            className={`p-2 rounded-xl transition-all cursor-pointer ${
-                              isSelected
-                                ? 'text-indigo-200 hover:text-white hover:bg-indigo-700/60'
-                                : 'text-slate-400 hover:text-red-600 hover:bg-red-50'
-                            }`}
-                            title="Delete topic"
-                          >
-                            {isDeleting === item.id ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                          
-                          <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${
-                            isSelected ? 'translate-x-0.5' : 'text-slate-400 group-hover:translate-x-0.5'
-                          }`} />
-                        </div>
-                      </motion.div>
-                    );
-                  })
-                )}
-              </motion.div>
-
-            </div>
-
-            {/* Right Column: Connection Cards (7 cols) */}
-            <div className="lg:col-span-7">
-              <AnimatePresence mode="wait">
-                {selectedTopic ? (
-                  <motion.div
-                    key={selectedTopic.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-                    className="space-y-4"
-                  >
-                    <div className="p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-slate-200/80 shadow-xs flex justify-between items-center">
-                      <h2 className="font-display font-bold text-lg text-slate-900 capitalize">
-                        {selectedTopic.title} Connections
-                      </h2>
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
-                        {selectedTopic.connections.length} Saved Parallel{selectedTopic.connections.length > 1 ? 's' : ''}
-                      </span>
+                        <option value="All Fields">All Fields</option>
+                        {allFields.map((f) => (
+                          <option key={f} value={f}>{f}</option>
+                        ))}
+                      </select>
                     </div>
 
+                    {/* Sort Order */}
+                    <div className="flex-1 relative">
+                      <ArrowUpDown className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-400" />
+                      <select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value as any)}
+                        className="w-full pl-8 pr-2 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-semibold text-slate-600 appearance-none"
+                      >
+                        <option value="newest">Newest Saved</option>
+                        <option value="oldest">Oldest Saved</option>
+                        <option value="alphabetical">Alphabetical</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Topics List */}
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="space-y-2 max-h-[60vh] overflow-y-auto pr-1"
+                >
+                  {filteredTopics.length === 0 ? (
+                    <div className="text-center py-8 text-slate-500 text-sm border border-dashed border-slate-200 rounded-2xl bg-white/50">
+                      No matching topics found.
+                    </div>
+                  ) : (
+                    filteredTopics.map((item) => {
+                      const isSelected = selectedTopic?.id === item.id;
+                      const formattedDate = new Date(item.created_at).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      });
+
+                      return (
+                        <motion.div
+                          key={item.id}
+                          variants={itemVariants}
+                          onClick={() => setSelectedTopic(item)}
+                          className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between group relative overflow-hidden ${
+                            isSelected
+                              ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
+                              : 'bg-white text-slate-800 border-slate-200 hover:border-indigo-300 hover:shadow-xs'
+                          }`}
+                        >
+                          <div className="space-y-1">
+                            <h3 className="font-display font-bold text-base capitalize">
+                              {item.title}
+                            </h3>
+                            <div className="flex items-center gap-3 text-[11px] font-medium opacity-80">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {formattedDate}
+                              </span>
+                              <span>•</span>
+                              <span>{item.connections.length} fields</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => handleDeleteTopic(item.id, e)}
+                              disabled={isDeletingTopic === item.id}
+                              className={`p-2 rounded-xl transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'text-indigo-200 hover:text-white hover:bg-indigo-700/60'
+                                  : 'text-slate-400 hover:text-red-600 hover:bg-red-50'
+                              }`}
+                              title="Delete topic"
+                            >
+                              {isDeletingTopic === item.id ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                            
+                            <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${
+                              isSelected ? 'translate-x-0.5' : 'text-slate-400 group-hover:translate-x-0.5'
+                            }`} />
+                          </div>
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </motion.div>
+              </div>
+
+              {/* Right Column: Connection Cards */}
+              <div className="lg:col-span-7">
+                <AnimatePresence mode="wait">
+                  {selectedTopic ? (
                     <motion.div
-                      variants={containerVariants}
-                      initial="hidden"
-                      animate="show"
-                      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                      key={selectedTopic.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -15 }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                      className="space-y-4"
                     >
-                      {selectedTopic.connections.map((c, idx) => {
-                        // Adapt schema connection to fit ConnectionCard interface expects { funFact, emoji }
-                        const formattedConn = {
-                          id: c.id,
-                          field: c.field as any,
-                          analogy: c.analogy,
-                          explanation: c.explanation,
-                          funFact: c.fun_fact,
-                          emoji: c.emoji,
-                        };
+                      <div className="p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-slate-200/80 shadow-xs flex justify-between items-center">
+                        <h2 className="font-display font-bold text-lg text-slate-900 capitalize">
+                          {selectedTopic.title} Connections
+                        </h2>
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
+                          {selectedTopic.connections.length} Saved Parallel{selectedTopic.connections.length > 1 ? 's' : ''}
+                        </span>
+                      </div>
 
-                        return (
-                          <ConnectionCard
-                            key={c.id}
-                            connection={formattedConn}
-                            mode={mode}
-                            index={idx}
-                            isSaved={true} // It is already saved!
-                          />
-                        );
-                      })}
+                      <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                      >
+                        {selectedTopic.connections.map((c, idx) => {
+                          const formattedConn = {
+                            id: c.id,
+                            field: c.field as any,
+                            analogy: c.analogy,
+                            explanation: c.explanation,
+                            funFact: c.fun_fact,
+                            emoji: c.emoji,
+                          };
+
+                          return (
+                            <ConnectionCard
+                              key={c.id}
+                              connection={formattedConn}
+                              mode={mode}
+                              index={idx}
+                              isSaved={true}
+                            />
+                          );
+                        })}
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-16 text-slate-400 border border-dashed border-slate-200 rounded-3xl bg-white/50"
-                  >
-                    Select a topic from the left to view connections.
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  ) : (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center py-16 text-slate-400 border border-dashed border-slate-200 rounded-3xl bg-white/50"
+                    >
+                      Select a topic from the left to view connections.
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
+          )
+        )}
 
-          </div>
+        {/* Ideas Tab Content */}
+        {activeTab === 'ideas' && (
+          ideas.length === 0 ? (
+            /* Ideas Empty state */
+            <div className="flex-grow flex items-center justify-center py-12">
+              <div className="w-full max-w-md text-center p-8 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
+                  <Lightbulb className="w-7 h-7 animate-pulse" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
+                  No project blueprints saved yet
+                </h3>
+                <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                  Select and intersect different topics using the Idea Generator to synthesize multi-disciplinary buildable blueprints.
+                </p>
+                <button
+                  onClick={() => router.push('/ideas')}
+                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  Generate new ideas
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Ideas List Grid */
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {ideas.map((idea, idx) => {
+                const formattedDate = new Date(idea.created_at).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                });
+
+                return (
+                  <motion.div
+                    key={idea.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05, type: 'spring', stiffness: 100 }}
+                    className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300 relative"
+                  >
+                    <div className="space-y-4">
+                      {/* Ribbon of combined topics */}
+                      <div className="flex flex-wrap gap-1">
+                        {idea.combined_topics.map((topic) => (
+                          <span key={topic} className="text-[8px] bg-slate-100 text-slate-500 font-bold uppercase px-2 py-0.5 rounded">
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="space-y-2">
+                        <h3 className="text-base font-extrabold text-slate-900 font-display leading-tight">
+                          {idea.title}
+                        </h3>
+                        <p className="text-slate-600 text-xs md:text-sm leading-relaxed">
+                          {idea.description}
+                        </p>
+                      </div>
+
+                      {/* Blueprint Box */}
+                      <div className="bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:12px_12px] bg-slate-50 border border-slate-200/60 p-4 rounded-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-1 bg-indigo-50 border-l border-b border-indigo-100 text-[8px] font-bold uppercase text-indigo-600 tracking-wider rounded-bl-lg">
+                          blueprint
+                        </div>
+                        <h4 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                          <Target className="w-2.5 h-2.5 text-indigo-500" />
+                          Intersection Dynamics
+                        </h4>
+                        <p className="text-slate-700 text-xs leading-relaxed italic">
+                          "{idea.why_non_obvious}"
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div className="pt-4 border-t border-slate-100 mt-5 flex items-center justify-between gap-3">
+                      <span className="text-[10px] text-slate-400 font-semibold flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {formattedDate}
+                      </span>
+
+                      <button
+                        onClick={(e) => handleDeleteIdea(idea.id, e)}
+                        disabled={isDeletingIdea === idea.id}
+                        className="p-2 rounded-xl text-slate-400 hover:text-red-650 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all cursor-pointer"
+                        title="Delete Idea"
+                      >
+                        {isDeletingIdea === idea.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )
         )}
       </main>
     </div>

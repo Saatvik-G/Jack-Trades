@@ -40,3 +40,29 @@ CREATE TABLE IF NOT EXISTS connections (
 
 -- Index for nested retrieval of connections per topic
 CREATE INDEX IF NOT EXISTS idx_connections_topic ON connections(topic_id);
+
+-- 4. Create roadmaps table
+CREATE TABLE IF NOT EXISTS roadmaps (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    goal VARCHAR(255) NOT NULL,
+    steps JSONB NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- Index for retrieving roadmaps per user
+CREATE INDEX IF NOT EXISTS idx_roadmaps_user ON roadmaps(user_id);
+
+-- 5. Create ideas table
+CREATE TABLE IF NOT EXISTS ideas (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    why_non_obvious TEXT NOT NULL,
+    combined_topics JSONB NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- Index for retrieving ideas per user
+CREATE INDEX IF NOT EXISTS idx_ideas_user ON ideas(user_id);

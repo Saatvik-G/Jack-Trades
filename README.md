@@ -54,6 +54,8 @@ graph TD
 5. **Mobile-Responsive Accordion Fallback**: If the viewport is smaller than `768px`, the D3 graph automatically degrades to an expandable accordion list of topics, guaranteeing accessibility on mobile devices.
 6. **Ambient Atmospheric Motion**: Subtly drifting low-opacity color blobs and spotlight card hovers created using Framer Motion spring physics.
 7. **Keep-Alive Scheduler**: Integrates `/api/auth/session` ping targets compatible with UptimeRobot to keep free-tier databases warm.
+8. **Learning Roadmaps**: Allows users to type or select a goal topic and generate a sequenced 5-8 step cross-disciplinary learning path with prior-step dependency tracking and borrowed-intuition highlights.
+9. **Idea Intersection Generator**: Synthesizes 3 concrete project or business concepts combining 2+ selected fields with a grid-patterned blueprint showing the intersection mechanics.
 
 ---
 
@@ -62,13 +64,17 @@ graph TD
 ```text
 ├── app/                  # Next.js App Router Pages
 │   ├── api/              # Route handlers for connection generation, saving, and auth
+│   │   ├── roadmaps/     # API routes for saving and generating learning roadmaps
+│   │   ├── ideas/        # API routes for saving and generating project ideas
 │   ├── knowledge-graph/  # D3 force-directed visual canvas & mobile fallback
-│   ├── second-brain/     # Searchable/Filterable dashboard for saved topics
+│   ├── second-brain/     # Searchable/Filterable dashboard for saved topics/ideas
+│   ├── roadmaps/         # Learning Roadmaps timeline explorer UI page
+│   ├── ideas/            # Project Idea Intersection Generator page
 │   ├── login/ & signup/  # Authentication forms
-│   ├── layout.tsx        # HTML wrapper containing Analytics and AmbientBlobs
+│   ├── layout.tsx        # HTML wrapper containing Analytics and AmbientBackground
 │   └── page.tsx          # Homepage Explorer & client-side search content
 ├── components/           # Reusable layout and animated components
-│   ├── AmbientBlobs.tsx  # Drifting background colored blobs
+│   ├── AmbientBackground.tsx# Drifting background color blobs & noise layer
 │   ├── SpotlightCard.tsx # Cursor spotlight hover tracker card wrapper
 │   ├── MagneticButton.tsx# Spring physics magnetic button wrapper
 │   ├── Navbar.tsx        # Persistent responsive header navbar
@@ -116,6 +122,28 @@ Holds individual saved cards/similarities nested under a topic.
 | `explanation` | TEXT | NOT NULL |
 | `fun_fact` | TEXT | NOT NULL |
 | `emoji` | VARCHAR | NOT NULL |
+| `created_at` | TIMESTAMP | DEFAULT: NOW() |
+
+### 4. `roadmaps` Table
+Holds saved cross-disciplinary learning paths.
+| Column | Type | Constraints |
+| :--- | :--- | :--- |
+| `id` | UUID | PRIMARY KEY, Default: random_uuid() |
+| `user_id` | UUID | REFERENCES `users(id)` ON DELETE CASCADE |
+| `goal` | VARCHAR | NOT NULL |
+| `steps` | JSONB | NOT NULL |
+| `created_at` | TIMESTAMP | DEFAULT: NOW() |
+
+### 5. `ideas` Table
+Holds saved project/business ideas.
+| Column | Type | Constraints |
+| :--- | :--- | :--- |
+| `id` | UUID | PRIMARY KEY, Default: random_uuid() |
+| `user_id` | UUID | REFERENCES `users(id)` ON DELETE CASCADE |
+| `title` | VARCHAR | NOT NULL |
+| `description` | TEXT | NOT NULL |
+| `why_non_obvious` | TEXT | NOT NULL |
+| `combined_topics` | JSONB | NOT NULL |
 | `created_at` | TIMESTAMP | DEFAULT: NOW() |
 
 ---
