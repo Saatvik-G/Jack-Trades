@@ -81,14 +81,11 @@ export default function SignupPage() {
       <NetworkBackground />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center">
-        <Link href="/" className="inline-flex items-center gap-2.5 mb-6 group">
-          <div className="p-3 bg-gradient-to-tr from-indigo-700 via-indigo-600 to-violet-600 text-white rounded-2xl shadow-lg shadow-indigo-500/25 border border-indigo-400/30 group-hover:rotate-6 transition-transform">
-            <Compass className="w-7 h-7" />
-          </div>
-          <span className="font-display font-extrabold text-2xl tracking-tight text-slate-900">
-            Jack<span className="text-indigo-600">&</span>Trades
-          </span>
-        </Link>
+        <div className="mb-6">
+          <Link href="/" className="font-sans font-bold text-2xl tracking-tight text-slate-900">
+            Jack<span className="font-display italic font-normal text-indigo-650 mx-0.5">&</span>Trades
+          </Link>
+        </div>
         <h2 className="text-3xl font-extrabold text-slate-900 font-display">
           Create your account
         </h2>
@@ -98,19 +95,19 @@ export default function SignupPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4">
-        <div className="bg-white/90 backdrop-blur-md py-8 px-4 shadow-xl border border-slate-200/80 rounded-3xl sm:px-10">
+        <div className="bg-slate-50 py-8 px-6 border border-slate-900 rounded-xl shadow-[4px_4px_0px_#11161B] sm:px-10">
           {success ? (
             <div className="py-8 text-center space-y-4">
-              <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full border border-indigo-100 flex items-center justify-center mx-auto shadow-inner">
+              <div className="w-14 h-14 bg-white text-indigo-655 rounded-lg border border-slate-900 flex items-center justify-center mx-auto shadow-[1.5px_1.5px_0px_#11161B]">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h3 className="text-lg font-bold text-slate-950 font-display">Account Registered!</h3>
-              <p className="text-slate-600 text-sm">Signing you in automatically...</p>
+              <p className="text-slate-600 text-xs">Signing you in automatically...</p>
             </div>
           ) : (
             <form className="space-y-5" onSubmit={handleSubmit}>
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-2.5 text-red-800 text-sm">
+                <div className="p-4 bg-[#FFF5F5] border border-slate-900 rounded-lg flex items-start gap-2.5 text-slate-800 text-xs font-medium shadow-[2px_2px_0px_#11161B]">
                   <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
@@ -130,7 +127,7 @@ export default function SignupPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 text-sm bg-white"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-900 rounded-lg placeholder-slate-400 focus:outline-none focus:shadow-[2px_2px_0px_#11161B] text-sm bg-white font-medium"
                     placeholder="name@example.com"
                     disabled={isLoading}
                   />
@@ -151,7 +148,7 @@ export default function SignupPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 text-sm bg-white"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-900 rounded-lg placeholder-slate-400 focus:outline-none focus:shadow-[2px_2px_0px_#11161B] text-sm bg-white font-medium"
                     placeholder="••••••••"
                     disabled={isLoading}
                   />
@@ -172,7 +169,7 @@ export default function SignupPage() {
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 text-sm bg-white"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-900 rounded-lg placeholder-slate-400 focus:outline-none focus:shadow-[2px_2px_0px_#11161B] text-sm bg-white font-medium"
                     placeholder="••••••••"
                     disabled={isLoading}
                   />
@@ -183,7 +180,7 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold uppercase tracking-wider text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all active:scale-[0.98]"
+                  className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-slate-900 rounded-lg text-xs font-bold uppercase tracking-wider text-white bg-indigo-600 hover:bg-indigo-755 focus:outline-none focus:shadow-[2px_2px_0px_#11161B] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-[2px_2px_0px_#11161B] hover:shadow-[3.5px_3.5px_0px_#11161B] active:translate-y-0.5 transition-all"
                 >
                   {isLoading ? (
                     <>

@@ -268,9 +268,8 @@ export default function KnowledgeGraphPage() {
       .append('circle')
       .attr('r', 24)
       .attr('fill', '#ffffff')
-      .attr('stroke', '#6366f1')
-      .attr('stroke-width', 3)
-      .style('filter', 'drop-shadow(0px 4px 10px rgba(99, 102, 241, 0.25))');
+      .attr('stroke', '#11161B')
+      .attr('stroke-width', 2.5);
 
     node.filter(d => d.type === 'topic')
       .append('text')
@@ -284,17 +283,16 @@ export default function KnowledgeGraphPage() {
       .attr('r', 12)
       .attr('fill', d => d.fieldColor || '#64748b')
       .attr('stroke', '#ffffff')
-      .attr('stroke-width', 2)
-      .style('filter', 'drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.15))');
+      .attr('stroke-width', 2);
 
     // 7. Labels
     node.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', (d) => d.type === 'topic' ? 40 : 26)
       .attr('font-size', (d) => d.type === 'topic' ? '12px' : '10px')
-      .attr('font-weight', (d) => d.type === 'topic' ? '700' : '600')
-      .attr('fill', (d) => d.type === 'topic' ? '#0f172a' : '#475569')
-      .attr('font-family', 'var(--font-outfit), sans-serif')
+      .attr('font-weight', (d) => d.type === 'topic' ? '700' : '650')
+      .attr('fill', (d) => d.type === 'topic' ? '#11161B' : '#475569')
+      .attr('font-family', 'var(--font-space-grotesk), sans-serif')
       .text(d => d.label);
 
     // 8. Hover highlighters
@@ -420,19 +418,19 @@ export default function KnowledgeGraphPage() {
         {topics.length === 0 ? (
           /* Empty State */
           <div className="flex-grow flex items-center justify-center py-12">
-            <div className="w-full max-w-md text-center p-8 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200 shadow-sm">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
+            <div className="w-full max-w-md text-center p-8 bg-slate-50 border border-slate-900 rounded-xl shadow-[3px_3px_0px_#11161B]">
+              <div className="w-14 h-14 rounded-lg bg-white text-indigo-655 flex items-center justify-center mx-auto mb-4 border border-slate-900 shadow-[1.5px_1.5px_0px_#11161B]">
                 <Brain className="w-7 h-7" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
                 Nothing saved yet
               </h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-6">
+              <p className="text-slate-600 text-xs leading-relaxed mb-6">
                 Try exploring a topic in the Explorer first to populate your knowledge graph nodes.
               </p>
               <button
                 onClick={() => router.push('/')}
-                className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-750 text-white border border-slate-900 font-bold uppercase tracking-wider text-xs shadow-[2px_2px_0px_#11161B] hover:shadow-[3.5px_3.5px_0px_#11161B] active:translate-y-0.5 transition-all cursor-pointer"
               >
                 Try exploring a topic
               </button>
@@ -541,27 +539,27 @@ export default function KnowledgeGraphPage() {
               /* D3 GRAPH VIEW */
               <div className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative min-h-[500px]">
                 {/* Graph Visual Canvas (8 cols or 12 if side panel is closed) */}
-                <div className={`lg:col-span-12 rounded-3xl bg-white border border-slate-200 shadow-xs relative flex flex-col overflow-hidden min-h-[500px] transition-all`}>
+                <div className={`lg:col-span-12 rounded-xl bg-slate-50 border border-slate-900 shadow-[3px_3px_0px_#11161B] relative flex flex-col overflow-hidden min-h-[500px] transition-all`}>
                   
                   {/* Zoom Buttons Controls Overlay */}
-                  <div className="absolute bottom-4 right-4 z-20 flex flex-col gap-1.5 p-1 rounded-xl bg-white/80 backdrop-blur border border-slate-200/80 shadow-xs">
+                  <div className="absolute bottom-4 right-4 z-20 flex flex-col gap-1.5 p-1 rounded-lg bg-white border border-slate-900 shadow-[2px_2px_0px_#11161B]">
                     <button
                       id="zoom-in"
-                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
                       title="Zoom In"
                     >
                       <ZoomIn className="w-4 h-4" />
                     </button>
                     <button
                       id="zoom-out"
-                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
                       title="Zoom Out"
                     >
                       <ZoomOut className="w-4 h-4" />
                     </button>
                     <button
                       id="zoom-reset"
-                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
+                      className="p-2 rounded-lg hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
                       title="Reset View"
                     >
                       <Maximize2 className="w-4 h-4" />
@@ -569,9 +567,9 @@ export default function KnowledgeGraphPage() {
                   </div>
 
                   {/* Instructions Tip */}
-                  <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-xl bg-slate-900/90 text-white text-[11px] font-medium tracking-wide flex items-center gap-1.5 shadow-sm border border-slate-800">
-                    <Compass className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-                    <span>Tip: Click any white central node to review saved connections.</span>
+                  <div className="absolute top-4 left-4 z-20 px-3 py-1.5 rounded-lg bg-slate-950 text-white text-[10px] font-bold tracking-wider uppercase flex items-center gap-1.5 border border-slate-900 shadow-[2px_2px_0px_#11161B]">
+                    <Compass className="w-3.5 h-3.5 text-amber-450 animate-pulse" />
+                    <span>Tip: Click any central node to review saved connections.</span>
                   </div>
 
                   {/* SVGs Container */}
@@ -588,12 +586,12 @@ export default function KnowledgeGraphPage() {
                       animate={{ x: 0 }}
                       exit={{ x: '100%' }}
                       transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-                      className="fixed inset-y-0 right-0 z-50 w-full sm:max-w-lg bg-white/90 backdrop-blur-lg shadow-2xl border-l border-slate-200/80 flex flex-col"
+                      className="fixed inset-y-0 right-0 z-50 w-full sm:max-w-lg bg-slate-50 border-l border-slate-900 shadow-2xl flex flex-col"
                     >
                       {/* Panel Header */}
                       <div className="p-6 border-b border-slate-200 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 block mb-0.5">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-650 block mb-0.5">
                             Saved Connection Map
                           </span>
                           <h2 className="text-2xl font-bold text-slate-950 font-display capitalize">
@@ -605,7 +603,7 @@ export default function KnowledgeGraphPage() {
                           <ModeToggle mode={mode} onToggle={handleModeToggle} />
                           <button
                             onClick={() => setSelectedTopic(null)}
-                            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                            className="p-2 rounded-lg border border-slate-900 hover:bg-slate-100 text-slate-700 shadow-[1px_1px_0px_#11161B] hover:shadow-[2px_2px_0px_#11161B] transition-all cursor-pointer"
                             title="Close drawer"
                           >
                             <X className="w-4 h-4" />

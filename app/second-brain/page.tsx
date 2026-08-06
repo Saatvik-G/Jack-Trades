@@ -309,19 +309,19 @@ export default function SecondBrainPage() {
           topics.length === 0 ? (
             /* Connections Empty state */
             <div className="flex-grow flex items-center justify-center py-12">
-              <div className="w-full max-w-md text-center p-8 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
+              <div className="w-full max-w-md text-center p-8 bg-slate-50 border border-slate-900 rounded-xl shadow-[3px_3px_0px_#11161B] relative overflow-hidden">
+                <div className="w-14 h-14 rounded-lg bg-white text-indigo-650 flex items-center justify-center mx-auto mb-4 border border-slate-900 shadow-[1.5px_1.5px_0px_#11161B]">
                   <Compass className="w-7 h-7" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
                   No connections saved yet
                 </h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                <p className="text-slate-600 text-xs leading-relaxed mb-6">
                   Try exploring a topic in the Explorer and bookmarking connection cards to build your brain.
                 </p>
                 <button
                   onClick={() => router.push('/')}
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                  className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-750 text-white border border-slate-900 font-bold uppercase tracking-wider text-xs shadow-[2px_2px_0px_#11161B] hover:shadow-[3.5px_3.5px_0px_#11161B] active:translate-y-0.5 transition-all cursor-pointer"
                 >
                   Try exploring a topic
                 </button>
@@ -520,19 +520,19 @@ export default function SecondBrainPage() {
           ideas.length === 0 ? (
             /* Ideas Empty state */
             <div className="flex-grow flex items-center justify-center py-12">
-              <div className="w-full max-w-md text-center p-8 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
-                  <Lightbulb className="w-7 h-7 animate-pulse" />
+              <div className="w-full max-w-md text-center p-8 bg-slate-50 border border-slate-900 rounded-xl shadow-[3px_3px_0px_#11161B] relative overflow-hidden">
+                <div className="w-14 h-14 rounded-lg bg-white text-indigo-650 flex items-center justify-center mx-auto mb-4 border border-slate-900 shadow-[1.5px_1.5px_0px_#11161B]">
+                  <Lightbulb className="w-7 h-7" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2 font-display">
                   No project blueprints saved yet
                 </h3>
-                <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                <p className="text-slate-600 text-xs leading-relaxed mb-6">
                   Select and intersect different topics using the Idea Generator to synthesize multi-disciplinary buildable blueprints.
                 </p>
                 <button
                   onClick={() => router.push('/ideas')}
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-wider text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                  className="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-750 text-white border border-slate-900 font-bold uppercase tracking-wider text-xs shadow-[2px_2px_0px_#11161B] hover:shadow-[3.5px_3.5px_0px_#11161B] active:translate-y-0.5 transition-all cursor-pointer"
                 >
                   Generate new ideas
                 </button>
