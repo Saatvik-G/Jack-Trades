@@ -47,15 +47,12 @@ export const Navbar: React.FC = () => {
   return (
     <header className="sticky top-4 z-40 max-w-5xl mx-auto w-[calc(100%-2rem)] my-4">
       {/* Main Navbar Panel */}
-      <nav className="px-6 py-3 rounded-2xl glass-node-card bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-md flex items-center justify-between transition-all duration-300">
+      <nav className="px-6 py-3 rounded-xl glass-node-card bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-md flex items-center justify-between transition-all duration-300">
         
         {/* Zone 1: Brand logo (Left) */}
         <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
-          <div className="p-1.5 bg-gradient-to-tr from-indigo-700 to-violet-600 text-white rounded-lg group-hover:rotate-6 transition-transform">
-            <Compass className="w-5 h-5" />
-          </div>
-          <span className="font-display font-extrabold text-lg text-slate-900 group-hover:text-indigo-600 transition-colors">
-            Jack<span className="text-indigo-600">&</span>Trades
+          <span className="font-sans font-bold text-base tracking-wide text-slate-900 group-hover:text-indigo-600 transition-colors">
+            Jack<span className="font-display italic font-normal text-indigo-650 mx-0.5">&</span>Trades
           </span>
         </Link>
 

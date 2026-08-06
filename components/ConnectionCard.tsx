@@ -77,7 +77,6 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
             {/* Field Node Badge */}
             <div className="flex items-center justify-between mb-4 pt-2">
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
                 <span className={`inline-flex items-center px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border border-slate-900 shadow-[1px_1px_0px_#11161B] ${accent.bg} ${accent.text}`}>
                   {connection.field}
                 </span>

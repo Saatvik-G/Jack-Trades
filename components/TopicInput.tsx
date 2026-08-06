@@ -83,7 +83,7 @@ export const TopicInput: React.FC<TopicInputProps> = ({ onSubmit, isLoading }) =
             disabled={isLoading}
             whileHover={{ y: -1, x: -1 }}
             whileTap={{ scale: 0.98 }}
-            className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-900 text-slate-700 text-xs font-bold transition-all cursor-pointer disabled:opacity-50 shadow-[1px_1px_0px_#11161B] hover:shadow-[2.5px_2.5px_0px_#11161B]"
+            className="px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-900 text-slate-700 text-xs font-bold transition-all cursor-pointer disabled:opacity-50 shadow-[1px_1px_0px_#11161B] hover:shadow-[2.5px_2.5px_0px_#11161B]"
           >
             {item}
           </motion.button>

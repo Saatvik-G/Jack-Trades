@@ -67,30 +67,30 @@ export const AmbientBackground: React.FC = () => {
   return (
     <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[#FAF9F6]">
       {/* 1. Large Blurred Animated Blobs */}
-      <div className="absolute inset-0 filter blur-[100px] opacity-25 mix-blend-multiply">
-        {/* Blob 1: Indigo */}
+      <div className="absolute inset-0 filter blur-[100px] opacity-20 mix-blend-multiply">
+        {/* Blob 1: Archival Sage */}
         <motion.div
           variants={blobVariants}
           animate="animate1"
-          className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-indigo-300"
+          className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-emerald-300"
         />
-        {/* Blob 2: Cyan */}
+        {/* Blob 2: Manuscript Ochre */}
         <motion.div
           variants={blobVariants}
           animate="animate2"
-          className="absolute -bottom-[10%] -right-[10%] w-[55vw] h-[55vw] max-w-[700px] max-h-[700px] rounded-full bg-cyan-300"
+          className="absolute -bottom-[10%] -right-[10%] w-[55vw] h-[55vw] max-w-[700px] max-h-[700px] rounded-full bg-amber-200"
         />
-        {/* Blob 3: Purple */}
+        {/* Blob 3: Crimson */}
         <motion.div
           variants={blobVariants}
           animate="animate3"
-          className="absolute top-[30%] right-[10%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] rounded-full bg-purple-300"
+          className="absolute top-[30%] right-[10%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] rounded-full bg-red-200"
         />
-        {/* Blob 4: Emerald */}
+        {/* Blob 4: Slate Warm */}
         <motion.div
           variants={blobVariants}
           animate="animate4"
-          className="absolute top-[50%] left-[5%] w-[35vw] h-[35vw] max-w-[450px] max-h-[450px] rounded-full bg-emerald-200"
+          className="absolute top-[50%] left-[5%] w-[35vw] h-[35vw] max-w-[450px] max-h-[450px] rounded-full bg-slate-200"
         />
       </div>
 

@@ -189,7 +189,7 @@ function ExplorerContent() {
           {!data && !isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-12 md:py-24 animate-fade-in-up">
               <div className="md:col-span-7 space-y-6 text-left">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-slate-900 text-indigo-700 text-xs font-bold tracking-wide uppercase shadow-[2px_2px_0px_#11161B]">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-50 border border-slate-900 text-indigo-750 text-xs font-bold tracking-wide uppercase shadow-[2px_2px_0px_#11161B]">
                   <Network className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
                   <span>The Polymath Engine</span>
                 </div>
@@ -206,16 +206,11 @@ function ExplorerContent() {
             </div>
           ) : (
             <div className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/80 mb-8 animate-fade-in-up">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-50 border border-slate-900 text-indigo-600 rounded-xl shadow-[2px_2px_0px_#11161B]">
-                  <Compass className="w-6 h-6 animate-spin-slow" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-display">
-                    Jack&Trades Explorer
-                  </h1>
-                  <p className="text-xs text-slate-500 font-medium">Cross-disciplinary connections engine</p>
-                </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                  <span className="font-sans">Jack</span><span className="font-display italic font-normal text-indigo-650 mx-0.5">&</span><span className="font-sans">Trades</span> <span className="font-display italic font-normal text-slate-655 text-lg ml-1">Explorer</span>
+                </h1>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Cross-disciplinary connections engine</p>
               </div>
               <div className="w-full md:w-auto max-w-xl flex-grow md:flex-grow-0">
                 <TopicInput onSubmit={fetchConnections} isLoading={isInteractionDisabled} />
