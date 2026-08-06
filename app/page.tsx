@@ -187,21 +187,17 @@ function ExplorerContent() {
 
           {/* Asymmetric Hero / Compact Header Transition */}
           {!data && !isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-12 md:py-24 animate-fade-in-up">
-              <div className="md:col-span-7 space-y-6 text-left">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-50 border border-slate-900 text-indigo-750 text-xs font-bold tracking-wide uppercase shadow-[2px_2px_0px_#11161B]">
-                  <Network className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
-                  <span>The Polymath Engine</span>
-                </div>
+            <div className="max-w-4xl py-16 md:py-24 animate-fade-in-up space-y-8 text-left">
+              <div className="space-y-4">
                 <h1 className="text-5xl md:text-7xl font-normal tracking-tight text-slate-900 font-display leading-tight">
-                  Discover the <span className="italic font-semibold text-indigo-600">undercurrents</span> of knowledge.
+                  Discover the <span className="italic font-semibold text-indigo-650">undercurrents</span> of knowledge.
                 </h1>
-                <p className="text-slate-650 text-base md:text-lg max-w-xl font-normal leading-relaxed">
-                  Jack&Trades maps non-obvious, structural connections across Science, Math, Psychology, Art, Philosophy, and 16+ disciplines. Type any topic to begin.
+                <p className="text-slate-655 text-base md:text-lg max-w-2xl font-normal leading-relaxed">
+                  Jack&Trades maps non-obvious, structural connections across Science, Math, Psychology, Art, Philosophy, and 16+ disciplines. Type any topic below to begin.
                 </p>
               </div>
-              <div className="md:col-span-5">
-                <TopicInput onSubmit={fetchConnections} isLoading={isInteractionDisabled} />
+              <div className="w-full">
+                <TopicInput onSubmit={fetchConnections} isLoading={isInteractionDisabled} isHero />
               </div>
             </div>
           ) : (

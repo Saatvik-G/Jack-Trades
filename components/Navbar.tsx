@@ -47,12 +47,15 @@ export const Navbar: React.FC = () => {
   return (
     <header className="sticky top-4 z-40 max-w-5xl mx-auto w-[calc(100%-2rem)] my-4">
       {/* Main Navbar Panel */}
-      <nav className="px-6 py-3 rounded-xl glass-node-card bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-md flex items-center justify-between transition-all duration-300">
+      <nav className="px-8 py-3.5 rounded-xl glass-node-card bg-white/90 border border-slate-900 shadow-[3px_3px_0px_#11161B] flex items-center justify-between transition-all duration-300">
         
         {/* Zone 1: Brand logo (Left) */}
-        <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
-          <span className="font-sans font-bold text-base tracking-wide text-slate-900 group-hover:text-indigo-600 transition-colors">
+        <Link href="/" className="flex flex-col text-left group" onClick={() => setIsOpen(false)}>
+          <span className="font-sans font-bold text-base tracking-wide text-slate-900 group-hover:text-indigo-650 transition-colors leading-none">
             Jack<span className="font-display italic font-normal text-indigo-650 mx-0.5">&</span>Trades
+          </span>
+          <span className="text-[9px] font-mono font-bold tracking-wider text-slate-500 uppercase mt-1 leading-none">
+            The Polymath Engine
           </span>
         </Link>
 
