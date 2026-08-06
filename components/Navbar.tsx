@@ -4,7 +4,19 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Compass, Brain, Network, LogIn, LogOut, User, Milestone, Lightbulb, Menu, X as CloseIcon } from 'lucide-react';
+import { 
+  Compass, 
+  Brain, 
+  Network, 
+  LogIn, 
+  LogOut, 
+  User, 
+  Milestone, 
+  Lightbulb, 
+  Menu, 
+  X as CloseIcon,
+  ChevronDown
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const Navbar: React.FC = () => {
@@ -12,19 +24,32 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const navItems = [
-    { name: 'Explorer', href: '/', icon: Compass },
+  // Dropdown states for desktop
+  const [activeDropdown, setActiveDropdown] = useState<'brain' | 'create' | null>(null);
+
+  const brainItems = [
     { name: 'Second Brain', href: '/second-brain', icon: Brain, protected: true },
     { name: 'Knowledge Graph', href: '/knowledge-graph', icon: Network, protected: true },
+  ];
+
+  const createItems = [
     { name: 'Roadmaps', href: '/roadmaps', icon: Milestone, protected: true },
     { name: 'Ideas', href: '/ideas', icon: Lightbulb, protected: true },
   ];
+
+  const handleDropdownToggle = (dropdown: 'brain' | 'create') => {
+    setActiveDropdown(prev => prev === dropdown ? null : dropdown);
+  };
+
+  const isBrainActive = brainItems.some(item => pathname === item.href);
+  const isCreateActive = createItems.some(item => pathname === item.href);
 
   return (
     <header className="sticky top-4 z-40 max-w-5xl mx-auto w-[calc(100%-2rem)] my-4">
       {/* Main Navbar Panel */}
       <nav className="px-6 py-3 rounded-2xl glass-node-card bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-md flex items-center justify-between transition-all duration-300">
-        {/* Brand logo */}
+        
+        {/* Zone 1: Brand logo (Left) */}
         <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsOpen(false)}>
           <div className="p-1.5 bg-gradient-to-tr from-indigo-700 to-violet-600 text-white rounded-lg group-hover:rotate-6 transition-transform">
             <Compass className="w-5 h-5" />
@@ -34,31 +59,129 @@ export const Navbar: React.FC = () => {
           </span>
         </Link>
 
-        {/* Desktop Nav Links */}
-        <div className="hidden md:flex items-center gap-1.5">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            const isProtected = item.protected;
+        {/* Zone 2: Primary Nav Links (Center) */}
+        <div className="hidden md:flex items-center gap-6">
+          {/* Core Explorer link */}
+          <Link
+            href="/"
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+              pathname === '/'
+                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-100'
+                : 'text-slate-655 hover:text-slate-950 hover:bg-slate-100/60'
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Explorer</span>
+          </Link>
 
-            return (
-              <Link
-                key={item.href}
-                href={isProtected && !session ? '/login' : item.href}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
-                  isActive
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-100'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
+          {/* Dropdown 1: My Brain */}
+          <div 
+            className="relative"
+            onMouseEnter={() => setActiveDropdown('brain')}
+            onMouseLeave={() => setActiveDropdown(null)}
+          >
+            <button
+              onClick={() => handleDropdownToggle('brain')}
+              className={`flex items-center gap-1 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                isBrainActive
+                  ? 'bg-indigo-50 border border-indigo-200/50 text-indigo-750'
+                  : 'text-slate-655 hover:text-slate-955 hover:bg-slate-100/60'
+              }`}
+            >
+              <Brain className="w-3.5 h-3.5" />
+              <span>My Brain</span>
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'brain' ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {activeDropdown === 'brain' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 mt-1 w-48 bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg rounded-xl p-1.5 z-50 flex flex-col gap-0.5"
+                >
+                  {brainItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+                    const targetHref = item.protected && !session ? '/login' : item.href;
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={targetHref}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                          isActive
+                            ? 'bg-indigo-600 text-white shadow-xs'
+                            : 'text-slate-650 hover:bg-slate-100 hover:text-slate-950'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Dropdown 2: Create */}
+          <div 
+            className="relative"
+            onMouseEnter={() => setActiveDropdown('create')}
+            onMouseLeave={() => setActiveDropdown(null)}
+          >
+            <button
+              onClick={() => handleDropdownToggle('create')}
+              className={`flex items-center gap-1 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                isCreateActive
+                  ? 'bg-indigo-50 border border-indigo-200/50 text-indigo-750'
+                  : 'text-slate-655 hover:text-slate-955 hover:bg-slate-100/60'
+              }`}
+            >
+              <Lightbulb className="w-3.5 h-3.5" />
+              <span>Create</span>
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'create' ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {activeDropdown === 'create' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 mt-1 w-48 bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg rounded-xl p-1.5 z-50 flex flex-col gap-0.5"
+                >
+                  {createItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+                    const targetHref = item.protected && !session ? '/login' : item.href;
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={targetHref}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                          isActive
+                            ? 'bg-indigo-600 text-white shadow-xs'
+                            : 'text-slate-650 hover:bg-slate-100 hover:text-slate-950'
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Auth Actions (Desktop) & Hamburger Icon (Mobile) */}
+        {/* Zone 3: Account/Auth Controls (Right) & Hamburger (Mobile) */}
         <div className="flex items-center gap-3">
           {/* Hamburger button visible only on mobile */}
           <button
@@ -81,7 +204,7 @@ export const Navbar: React.FC = () => {
 
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-slate-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-red-50 hover:text-red-650 hover:border-red-200 text-slate-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Logout</span>
@@ -107,31 +230,79 @@ export const Navbar: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-            className="absolute top-[100%] left-0 right-0 mt-2 px-6 py-4 rounded-2xl bg-white border border-slate-200 shadow-xl md:hidden z-50 flex flex-col gap-3"
+            className="absolute top-[100%] left-0 right-0 mt-2 px-6 py-5 rounded-2xl bg-white border border-slate-200 shadow-xl md:hidden z-50 flex flex-col gap-4"
           >
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-              const isProtected = item.protected;
+            {/* Explorer link */}
+            <Link
+              href="/"
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                pathname === '/'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:bg-slate-100/60'
+              }`}
+            >
+              <Compass className="w-4 h-4" />
+              <span>Explorer</span>
+            </Link>
 
-              return (
-                <Link
-                  key={item.href}
-                  href={isProtected && !session ? '/login' : item.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
-                    isActive
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:bg-slate-100/60'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
+            {/* Group 1: My Brain */}
+            <div className="space-y-1">
+              <span className="block px-4 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
+                My Brain
+              </span>
+              {brainItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                const targetHref = item.protected && !session ? '/login' : item.href;
 
-            <hr className="border-slate-100 my-1" />
+                return (
+                  <Link
+                    key={item.href}
+                    href={targetHref}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                      isActive
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 hover:bg-slate-100/60'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Group 2: Create */}
+            <div className="space-y-1">
+              <span className="block px-4 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
+                Create
+              </span>
+              {createItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                const targetHref = item.protected && !session ? '/login' : item.href;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={targetHref}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                      isActive
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'text-slate-600 hover:bg-slate-100/60'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <hr className="border-slate-100 my-0.5" />
 
             {session ? (
               <div className="flex flex-col gap-2.5">
