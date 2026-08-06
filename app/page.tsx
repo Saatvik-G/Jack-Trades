@@ -185,11 +185,43 @@ function ExplorerContent() {
           {/* Global Navbar */}
           <Navbar />
 
-          {/* Top Header */}
-          <Header />
-
-          {/* Search / Topic Input Box */}
-          <TopicInput onSubmit={fetchConnections} isLoading={isInteractionDisabled} />
+          {/* Asymmetric Hero / Compact Header Transition */}
+          {!data && !isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-12 md:py-24 animate-fade-in-up">
+              <div className="md:col-span-7 space-y-6 text-left">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-slate-900 text-indigo-700 text-xs font-bold tracking-wide uppercase shadow-[2px_2px_0px_#11161B]">
+                  <Network className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+                  <span>The Polymath Engine</span>
+                </div>
+                <h1 className="text-5xl md:text-7xl font-normal tracking-tight text-slate-900 font-display leading-tight">
+                  Discover the <span className="italic font-semibold text-indigo-600">undercurrents</span> of knowledge.
+                </h1>
+                <p className="text-slate-650 text-base md:text-lg max-w-xl font-normal leading-relaxed">
+                  Jack&Trades maps non-obvious, structural connections across Science, Math, Psychology, Art, Philosophy, and 16+ disciplines. Type any topic to begin.
+                </p>
+              </div>
+              <div className="md:col-span-5">
+                <TopicInput onSubmit={fetchConnections} isLoading={isInteractionDisabled} />
+              </div>
+            </div>
+          ) : (
+            <div className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/80 mb-8 animate-fade-in-up">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-indigo-50 border border-slate-900 text-indigo-600 rounded-xl shadow-[2px_2px_0px_#11161B]">
+                  <Compass className="w-6 h-6 animate-spin-slow" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-display">
+                    Jack&Trades Explorer
+                  </h1>
+                  <p className="text-xs text-slate-500 font-medium">Cross-disciplinary connections engine</p>
+                </div>
+              </div>
+              <div className="w-full md:w-auto max-w-xl flex-grow md:flex-grow-0">
+                <TopicInput onSubmit={fetchConnections} isLoading={isInteractionDisabled} />
+              </div>
+            </div>
+          )}
 
           {/* Loading State */}
           {isLoading && <LoadingSkeleton />}

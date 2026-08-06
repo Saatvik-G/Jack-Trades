@@ -8,24 +8,54 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        midnight: '#0B0F19',
-        canvas: '#F8FAFC',
-        nexus: {
-          50: '#EEF2FF',
-          100: '#E0E7FF',
-          200: '#C7D2FE',
-          500: '#6366F1',
-          600: '#4F46E5',
-          700: '#4338CA',
-          900: '#1E1B4B',
+        canvas: '#FAF9F6', // Alabaster Paper Base
+        slate: {
+          50: '#FAF9F6',
+          100: '#F2F1ED',
+          200: '#E3E1DB', // Warm Clay border
+          300: '#CAC7BD',
+          400: '#A19E92',
+          500: '#7F7C71', // Sage Warm Gray
+          600: '#5F5D54',
+          700: '#42403A',
+          800: '#282723',
+          900: '#11161B', // Ink Black
         },
-        cyanSpark: '#06B6D4',
-        violetPulse: '#8B5CF6',
-        amberGleam: '#F59E0B',
+        indigo: {
+          50: '#F0F4FA',
+          100: '#E1EBF5',
+          200: '#C3D5EB',
+          500: '#3E6D9C',
+          600: '#2B4C7E', // Renaissance Cobalt Accent
+          700: '#1F385C',
+          800: '#14253D',
+          900: '#0B1421',
+        },
+        amber: {
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          500: '#E2B13C', // Manuscript Ochre
+          600: '#D49D42',
+          700: '#B27D2E',
+        },
+        emerald: {
+          50: '#F0FDF4',
+          100: '#DCFCE7',
+          500: '#568A6B', // Archival Sage
+          600: '#446E54',
+          700: '#33523E',
+        },
+        red: {
+          50: '#FEF2F2',
+          100: '#FEE2E2',
+          600: '#A83B3B', // Academic Crimson
+          650: '#A83B3B',
+          700: '#8A2F2F',
+        }
       },
       fontFamily: {
-        display: ['var(--font-outfit)', 'sans-serif'],
-        sans: ['var(--font-inter)', 'sans-serif'],
+        display: ['var(--font-display)', 'serif'],
+        sans: ['var(--font-sans)', 'sans-serif'],
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',

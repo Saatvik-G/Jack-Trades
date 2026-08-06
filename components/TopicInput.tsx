@@ -42,8 +42,8 @@ export const TopicInput: React.FC<TopicInputProps> = ({ onSubmit, isLoading }) =
   return (
     <div className="w-full max-w-3xl mx-auto my-6 px-4">
       <form onSubmit={handleSubmit} className="relative group">
-        <div className="relative flex items-center bg-white/70 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/80 transition-all duration-200 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100 focus-within:shadow-md">
-          <div className="pl-4 text-slate-400">
+        <div className="relative flex items-center bg-slate-50 border border-slate-900 rounded-xl transition-all duration-200 shadow-[2px_2px_0px_#11161B] focus-within:shadow-[4px_4px_0px_#11161B] focus-within:-translate-y-0.5">
+          <div className="pl-4 text-slate-500">
             <Search className="w-5 h-5" />
           </div>
 
@@ -51,17 +51,17 @@ export const TopicInput: React.FC<TopicInputProps> = ({ onSubmit, isLoading }) =
             type="text"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="Type any topic, skill, or experience (e.g. 'jealousy', 'recursion', 'placebo effect')..."
-            className="w-full py-4 pl-3 pr-28 text-slate-800 placeholder-slate-400 bg-transparent outline-none text-base sm:text-lg"
+            placeholder="Type any topic, skill, or experience (e.g. 'jealousy', 'recursion')..."
+            className="w-full py-4.5 pl-3 pr-28 text-slate-900 placeholder-slate-400 bg-transparent outline-none text-sm sm:text-base font-medium"
             disabled={isLoading}
           />
 
           <motion.button
             type="submit"
             disabled={!topic.trim() || isLoading}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="absolute right-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm flex items-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="absolute right-2.5 px-4.5 py-2 rounded-lg bg-indigo-600 border border-slate-900 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[2px_2px_0px_#11161B] cursor-pointer"
           >
             <span>Explore</span>
             <ArrowRight className="w-4 h-4" />
@@ -81,9 +81,9 @@ export const TopicInput: React.FC<TopicInputProps> = ({ onSubmit, isLoading }) =
             type="button"
             onClick={() => handleChipClick(item)}
             disabled={isLoading}
-            whileHover={{ scale: 1.04, y: -1 }}
-            whileTap={{ scale: 0.96 }}
-            className="px-3 py-1.5 rounded-full bg-white/60 backdrop-blur-xs hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 text-slate-600 border border-slate-200/80 transition-all cursor-pointer disabled:opacity-50 shadow-2xs font-medium"
+            whileHover={{ y: -1, x: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-900 text-slate-700 text-xs font-bold transition-all cursor-pointer disabled:opacity-50 shadow-[1px_1px_0px_#11161B] hover:shadow-[2.5px_2.5px_0px_#11161B]"
           >
             {item}
           </motion.button>

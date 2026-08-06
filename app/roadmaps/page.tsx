@@ -268,9 +268,9 @@ export default function RoadmapsPage() {
           {/* Left panel: goal creation and saved roadmap lists */}
           <div className="lg:col-span-4 space-y-6">
             {/* Form Box */}
-            <div className="bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl p-6 shadow-xs relative">
+            <div className="bg-slate-50 border border-slate-900 rounded-xl p-6 shadow-[2px_2px_0px_#11161B] relative">
               <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <Sparkles className="w-4 h-4 text-indigo-650" />
                 Define Your Goal
               </h2>
 
@@ -287,7 +287,7 @@ export default function RoadmapsPage() {
                         setSelectedTopicTitle(e.target.value);
                         if (e.target.value) setGoalInput('');
                       }}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full bg-white border border-slate-900 rounded-lg px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:shadow-[2px_2px_0px_#11161B]"
                     >
                       <option value="">-- Type new goal below --</option>
                       {savedTopics.map((topic) => (
@@ -307,10 +307,10 @@ export default function RoadmapsPage() {
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. understand quantum computing, learn vector calculus"
+                      placeholder="e.g. understand quantum computing..."
                       value={goalInput}
                       onChange={(e) => setGoalInput(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="w-full bg-white border border-slate-900 rounded-lg px-3.5 py-2.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:shadow-[2px_2px_0px_#11161B]"
                     />
                   </div>
                 )}
@@ -318,7 +318,7 @@ export default function RoadmapsPage() {
                 <button
                   type="submit"
                   disabled={isGenerating || (!goalInput.trim() && !selectedTopicTitle)}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all active:scale-[0.98] shadow-sm shadow-indigo-150"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-xs font-bold uppercase tracking-wider text-white bg-indigo-600 border border-slate-900 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all active:scale-[0.98] shadow-[2px_2px_0px_#11161B]"
                 >
                   {isGenerating ? (
                     <>
@@ -336,8 +336,8 @@ export default function RoadmapsPage() {
             </div>
 
             {/* List of saved roadmaps */}
-            <div className="bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl p-6 shadow-xs">
-              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">
+            <div className="bg-slate-50 border border-slate-900 rounded-xl p-6 shadow-[2px_2px_0px_#11161B]">
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
                 Saved Roadmaps ({savedRoadmaps.length})
               </h3>
 
@@ -361,22 +361,22 @@ export default function RoadmapsPage() {
                         setSelectedRoadmap(rm);
                         setGeneratedRoadmap(null);
                       }}
-                      className={`w-full text-left px-4 py-3 rounded-xl border flex items-center justify-between gap-3 group transition-all ${
+                      className={`w-full text-left px-4 py-3 rounded-lg border border-slate-900 flex items-center justify-between gap-3 group transition-all ${
                         selectedRoadmap?.id === rm.id
-                          ? 'bg-indigo-50 border-indigo-200 text-indigo-900 font-semibold'
-                          : 'bg-slate-50 border-slate-100 hover:bg-slate-100 text-slate-700'
+                          ? 'bg-indigo-600 text-white font-bold shadow-[2px_2px_0px_#11161B] translate-x-[-1px] translate-y-[-1px]'
+                          : 'bg-white hover:-translate-y-0.5 text-slate-700 shadow-[1px_1px_0px_#11161B] hover:shadow-[2px_2px_0px_#11161B]'
                       }`}
                     >
                       <span className="truncate text-xs font-semibold uppercase tracking-wide">
                         {rm.goal}
                       </span>
                       <div className="flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                        <span className="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full font-bold">
+                        <span className="text-[10px] bg-white border border-slate-900 text-slate-800 px-2 py-0.5 rounded font-bold shadow-[1px_1px_0px_#11161B]">
                           {rm.steps.length} Steps
                         </span>
                         <button
                           onClick={(e) => handleDeleteRoadmap(rm.id, e)}
-                          className="p-1 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer"
+                          className="p-1 rounded-md border border-transparent hover:border-red-100 hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer text-slate-400"
                           title="Delete roadmap"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -428,7 +428,7 @@ export default function RoadmapsPage() {
                     <button
                       onClick={handleSaveRoadmap}
                       disabled={isSaving}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 cursor-pointer shadow-sm"
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-white bg-indigo-600 border border-slate-900 hover:bg-indigo-700 disabled:opacity-50 cursor-pointer shadow-[2px_2px_0px_#11161B]"
                     >
                       {isSaving ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -455,10 +455,10 @@ export default function RoadmapsPage() {
                         <div className="flex flex-col items-center relative z-10">
                           <button
                             onClick={(e) => toggleStepCompleted(step.stepNumber, e)}
-                            className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 flex items-center justify-center font-bold text-xs md:text-sm cursor-pointer shadow-sm transition-all duration-300 ${
+                            className={`w-8 h-8 md:w-10 md:h-10 rounded-full border border-slate-900 flex items-center justify-center font-bold text-xs md:text-sm cursor-pointer transition-all duration-300 ${
                               isCompleted
-                                ? 'bg-emerald-500 border-emerald-400 text-white scale-105'
-                                : 'bg-white hover:bg-indigo-50 border-indigo-200 text-indigo-600'
+                                ? 'bg-emerald-500 text-white shadow-[1px_1px_0px_#11161B] scale-105'
+                                : 'bg-slate-50 hover:bg-indigo-600 hover:text-white shadow-[2px_2px_0px_#11161B]'
                             }`}
                             title={isCompleted ? "Mark incomplete" : "Mark step as complete"}
                           >
@@ -473,10 +473,10 @@ export default function RoadmapsPage() {
                         {/* Step Detail Card */}
                         <div 
                           onClick={() => toggleStepExpand(step.stepNumber)}
-                          className={`flex-grow rounded-3xl border transition-all duration-300 cursor-pointer p-5 md:p-6 ${
+                          className={`flex-grow rounded-xl border border-slate-900 cursor-pointer p-5 md:p-6 transition-all duration-300 ${
                             isCompleted
-                              ? 'bg-slate-50/70 border-slate-200 opacity-60 shadow-2xs'
-                              : 'bg-white border-slate-200 shadow-sm hover:shadow-md'
+                              ? 'bg-slate-100 opacity-60 shadow-[1px_1px_0px_#11161B]'
+                              : 'bg-slate-50 shadow-[3px_3px_0px_#11161B] hover:shadow-[5px_5px_0px_#11161B] hover:-translate-y-0.5'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -485,13 +485,13 @@ export default function RoadmapsPage() {
                                 {step.concept}
                               </h3>
                               
-                              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                              <div className="flex flex-wrap items-center gap-2 pt-2">
                                 {step.buildsOn && step.buildsOn !== 'None' && (
-                                  <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-bold uppercase">
+                                  <span className="text-[10px] bg-white border border-slate-900 text-slate-700 px-2 py-0.5 rounded font-bold uppercase shadow-[1px_1px_0px_#11161B]">
                                     Builds on: {step.buildsOn}
                                   </span>
                                 )}
-                                <span className="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md font-bold uppercase flex items-center gap-1">
+                                <span className="text-[10px] bg-indigo-50 border border-slate-900 text-indigo-700 px-2 py-0.5 rounded font-bold uppercase flex items-center gap-1 shadow-[1px_1px_0px_#11161B]">
                                   <BookOpen className="w-2.5 h-2.5" />
                                   Intuition: {step.borrowedIntuition}
                                 </span>

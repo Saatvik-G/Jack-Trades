@@ -65,7 +65,7 @@ export const AmbientBackground: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[#F8FAFC]">
+    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[#FAF9F6]">
       {/* 1. Large Blurred Animated Blobs */}
       <div className="absolute inset-0 filter blur-[100px] opacity-25 mix-blend-multiply">
         {/* Blob 1: Indigo */}
@@ -98,7 +98,7 @@ export const AmbientBackground: React.FC = () => {
       <svg className="absolute inset-0 w-full h-full opacity-[0.12] mix-blend-overlay pointer-events-none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1" fill="#6366F1" opacity="0.3" />
+            <circle cx="2" cy="2" r="1" fill="#2B4C7E" opacity="0.3" />
           </pattern>
         </defs>
         
@@ -106,15 +106,9 @@ export const AmbientBackground: React.FC = () => {
         <rect width="100%" height="100%" fill="url(#gridPattern)" />
 
         {/* Dynamic connection lines (representing math/science links) */}
-        <path d="M -100,200 C 300,100 200,600 800,400" stroke="#4F46E5" strokeWidth="1.5" fill="none" opacity="0.4" />
-        <path d="M 200,-50 C 400,300 100,500 900,900" stroke="#0891B2" strokeWidth="1.5" fill="none" opacity="0.3" />
-        <path d="M 0,800 C 500,700 300,300 1100,200" stroke="#7C3AED" strokeWidth="1" fill="none" opacity="0.3" />
-
-        {/* Concentric planetary/field circles */}
-        <circle cx="10%" cy="20%" r="150" stroke="#6366F1" strokeWidth="1" fill="none" opacity="0.25" strokeDasharray="4 4" />
-        <circle cx="90%" cy="80%" r="250" stroke="#06B6D4" strokeWidth="1" fill="none" opacity="0.2" />
-        <circle cx="90%" cy="80%" r="120" stroke="#7C3AED" strokeWidth="1" fill="none" opacity="0.15" strokeDasharray="3 3" />
-        <circle cx="50%" cy="50%" r="300" stroke="#0891B2" strokeWidth="1" fill="none" opacity="0.1" />
+        <path d="M -100,200 C 300,100 200,600 800,400" stroke="#2B4C7E" strokeWidth="1.5" fill="none" opacity="0.4" />
+        <path d="M 200,-50 C 400,300 100,500 900,900" stroke="#3F828E" strokeWidth="1.5" fill="none" opacity="0.3" />
+        <path d="M 0,800 C 500,700 300,300 1100,200" stroke="#6B7D73" strokeWidth="1" fill="none" opacity="0.3" />
       </svg>
 
       {/* 3. Sparse constellation link overlay */}

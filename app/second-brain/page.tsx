@@ -281,23 +281,23 @@ export default function SecondBrainPage() {
         </div>
 
         {/* Tab Buttons Toggle */}
-        <div className="flex gap-2 border-b border-slate-200/50 pb-4 mb-6">
+        <div className="flex gap-3 border-b border-slate-200 pb-4 mb-6">
           <button
             onClick={() => setActiveTab('connections')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-4.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'connections'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-white hover:bg-slate-100 text-slate-655 border border-slate-200/80'
+                ? 'bg-indigo-600 border border-slate-900 text-white shadow-[2px_2px_0px_#11161B]'
+                : 'bg-slate-50 border border-slate-900 hover:bg-slate-100 text-slate-700 shadow-[1px_1px_0px_#11161B]'
             }`}
           >
             Saved Connections ({topics.length})
           </button>
           <button
             onClick={() => setActiveTab('ideas')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-4.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'ideas'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'bg-white hover:bg-slate-100 text-slate-655 border border-slate-200/80'
+                ? 'bg-indigo-600 border border-slate-900 text-white shadow-[2px_2px_0px_#11161B]'
+                : 'bg-slate-50 border border-slate-900 hover:bg-slate-100 text-slate-700 shadow-[1px_1px_0px_#11161B]'
             }`}
           >
             Saved Project Ideas ({ideas.length})
@@ -333,26 +333,26 @@ export default function SecondBrainPage() {
               {/* Left Column: Topics List, Search, & Filters */}
               <div className="lg:col-span-5 space-y-4">
                 {/* Search & Filter Controls Panel */}
-                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-900 shadow-[2px_2px_0px_#11161B] space-y-3">
                   <div className="relative">
-                    <Search className="absolute left-3 top-3.5 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-3 top-3.5 w-4 h-4 text-slate-500" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search topics..."
-                      className="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 text-sm"
+                      className="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-900 rounded-lg focus:outline-none focus:shadow-[2px_2px_0px_#11161B] text-sm font-medium"
                     />
                   </div>
 
                   <div className="flex gap-2">
                     {/* Field Filter */}
                     <div className="flex-1 relative">
-                      <Filter className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-400" />
+                      <Filter className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-500" />
                       <select
                         value={selectedField}
                         onChange={(e) => setSelectedField(e.target.value)}
-                        className="w-full pl-8 pr-2 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-semibold text-slate-600 appearance-none"
+                        className="w-full pl-8 pr-2 py-2 bg-white border border-slate-900 rounded-lg text-xs focus:outline-none focus:shadow-[2px_2px_0px_#11161B] font-bold text-slate-700 appearance-none"
                       >
                         <option value="All Fields">All Fields</option>
                         {allFields.map((f) => (
@@ -363,11 +363,11 @@ export default function SecondBrainPage() {
 
                     {/* Sort Order */}
                     <div className="flex-1 relative">
-                      <ArrowUpDown className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-400" />
+                      <ArrowUpDown className="absolute left-3 top-3 w-3.5 h-3.5 text-slate-500" />
                       <select
                         value={sortOrder}
                         onChange={(e) => setSortOrder(e.target.value as any)}
-                        className="w-full pl-8 pr-2 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 bg-white font-semibold text-slate-600 appearance-none"
+                        className="w-full pl-8 pr-2 py-2 bg-white border border-slate-900 rounded-lg text-xs focus:outline-none focus:shadow-[2px_2px_0px_#11161B] font-bold text-slate-700 appearance-none"
                       >
                         <option value="newest">Newest Saved</option>
                         <option value="oldest">Oldest Saved</option>
@@ -402,10 +402,10 @@ export default function SecondBrainPage() {
                           key={item.id}
                           variants={itemVariants}
                           onClick={() => setSelectedTopic(item)}
-                          className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between group relative overflow-hidden ${
+                          className={`w-full text-left p-4 rounded-xl border border-slate-900 transition-all duration-200 cursor-pointer flex items-center justify-between group relative overflow-hidden ${
                             isSelected
-                              ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
-                              : 'bg-white text-slate-800 border-slate-200 hover:border-indigo-300 hover:shadow-xs'
+                              ? 'bg-indigo-600 text-white shadow-[3px_3px_0px_#11161B] translate-x-[-1px] translate-y-[-1px]'
+                              : 'bg-slate-50 text-slate-800 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_#11161B] shadow-[1.5px_1.5px_0px_#11161B]'
                           }`}
                         >
                           <div className="space-y-1">
@@ -463,11 +463,11 @@ export default function SecondBrainPage() {
                       transition={{ type: 'spring', stiffness: 200, damping: 20 }}
                       className="space-y-4"
                     >
-                      <div className="p-4 rounded-2xl bg-white/60 backdrop-blur-md border border-slate-200/80 shadow-xs flex justify-between items-center">
+                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-900 shadow-[2px_2px_0px_#11161B] flex justify-between items-center">
                         <h2 className="font-display font-bold text-lg text-slate-900 capitalize">
                           {selectedTopic.title} Connections
                         </h2>
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
+                        <span className="text-xs font-bold px-3 py-1 rounded-md bg-white border border-slate-900 text-slate-700 shadow-[1px_1px_0px_#11161B]">
                           {selectedTopic.connections.length} Saved Parallel{selectedTopic.connections.length > 1 ? 's' : ''}
                         </span>
                       </div>
@@ -554,30 +554,30 @@ export default function SecondBrainPage() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05, type: 'spring', stiffness: 100 }}
-                    className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300 relative"
+                    className="bg-slate-50 border border-slate-900 rounded-xl p-6 shadow-[3px_3px_0px_#11161B] hover:shadow-[5px_5px_0px_#11161B] hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all duration-300 flex flex-col justify-between relative"
                   >
                     <div className="space-y-4">
                       {/* Ribbon of combined topics */}
                       <div className="flex flex-wrap gap-1">
                         {idea.combined_topics.map((topic) => (
-                          <span key={topic} className="text-[8px] bg-slate-100 text-slate-500 font-bold uppercase px-2 py-0.5 rounded">
+                          <span key={topic} className="text-[9px] bg-white border border-slate-900 text-slate-700 font-bold uppercase px-2 py-0.5 rounded shadow-[1px_1px_0px_#11161B]">
                             {topic}
                           </span>
                         ))}
                       </div>
 
                       <div className="space-y-2">
-                        <h3 className="text-base font-extrabold text-slate-900 font-display leading-tight">
+                        <h3 className="text-lg font-bold text-slate-900 font-display leading-tight">
                           {idea.title}
                         </h3>
-                        <p className="text-slate-600 text-xs md:text-sm leading-relaxed">
+                        <p className="text-slate-600 text-xs leading-relaxed">
                           {idea.description}
                         </p>
                       </div>
 
                       {/* Blueprint Box */}
-                      <div className="bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:12px_12px] bg-slate-50 border border-slate-200/60 p-4 rounded-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-1 bg-indigo-50 border-l border-b border-indigo-100 text-[8px] font-bold uppercase text-indigo-600 tracking-wider rounded-bl-lg">
+                      <div className="bg-[linear-gradient(to_right,#cac7bd_1px,transparent_1px),linear-gradient(to_bottom,#cac7bd_1px,transparent_1px)] bg-[size:12px_12px] bg-white border border-slate-900 p-4 rounded-lg relative overflow-hidden shadow-[1px_1px_0px_#11161B]">
+                        <div className="absolute top-0 right-0 p-1 bg-indigo-50 border-l border-b border-slate-900 text-[8px] font-bold uppercase text-indigo-650 tracking-wider rounded-bl">
                           blueprint
                         </div>
                         <h4 className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">

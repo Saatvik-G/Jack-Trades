@@ -100,7 +100,7 @@ export const Navbar: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 mt-1 w-48 bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg rounded-xl p-1.5 z-50 flex flex-col gap-0.5"
+                  className="absolute left-0 mt-1.5 w-48 bg-slate-50 border border-slate-900 shadow-[3px_3px_0px_#11161B] rounded-lg p-1.5 z-50 flex flex-col gap-0.5"
                 >
                   {brainItems.map((item) => {
                     const Icon = item.icon;
@@ -153,7 +153,7 @@ export const Navbar: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 mt-1 w-48 bg-white/95 backdrop-blur-md border border-slate-200 shadow-lg rounded-xl p-1.5 z-50 flex flex-col gap-0.5"
+                  className="absolute left-0 mt-1.5 w-48 bg-slate-50 border border-slate-900 shadow-[3px_3px_0px_#11161B] rounded-lg p-1.5 z-50 flex flex-col gap-0.5"
                 >
                   {createItems.map((item) => {
                     const Icon = item.icon;

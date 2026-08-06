@@ -68,17 +68,17 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
       variants={cardVariants}
       className="h-full"
     >
-      <SpotlightCard className="glass-node-card rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between group h-full relative">
-        {/* Top glowing gradient line indicating structural connection */}
-        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accent.glow} to-slate-200 opacity-90 z-10`} />
+      <SpotlightCard className="glass-node-card rounded-xl p-6 transition-all duration-300 flex flex-col justify-between group h-full relative">
+        {/* Top solid outline indicating structural connection */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-slate-900 z-10" />
 
         <div className="flex-grow flex flex-col justify-between h-full">
           <div>
             {/* Field Node Badge */}
-            <div className="flex items-center justify-between mb-4 pt-1">
+            <div className="flex items-center justify-between mb-4 pt-2">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-2xs ${accent.bg} ${accent.text} ${accent.border}`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
+                <span className={`inline-flex items-center px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border border-slate-900 shadow-[1px_1px_0px_#11161B] ${accent.bg} ${accent.text}`}>
                   {connection.field}
                 </span>
               </div>
@@ -95,19 +95,19 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
                     if (onSave) onSave();
                   }}
                   disabled={isSaving || isSaved}
-                  className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                  className={`p-2 rounded-lg border border-slate-900 transition-all cursor-pointer shadow-[1px_1px_0px_#11161B] active:translate-y-0.5 ${
                     isSaved
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                      ? 'bg-emerald-50 text-emerald-700'
                       : isSaving
-                      ? 'bg-slate-50 border-slate-200 text-slate-400 animate-pulse'
-                      : 'bg-white hover:bg-indigo-50 border-slate-200 hover:border-indigo-200 text-slate-400 hover:text-indigo-600'
+                      ? 'bg-slate-100 text-slate-400 animate-pulse'
+                      : 'bg-slate-50 hover:bg-indigo-50 text-slate-500 hover:text-indigo-600'
                   }`}
                   title={isSaved ? 'Saved to Second Brain' : 'Save to Second Brain'}
                 >
                   {isSaving ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : isSaved ? (
-                    <BookmarkCheck className="w-3.5 h-3.5 fill-emerald-600" />
+                    <BookmarkCheck className="w-3.5 h-3.5 fill-emerald-700" />
                   ) : (
                     <Bookmark className="w-3.5 h-3.5" />
                   )}
@@ -116,7 +116,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
             </div>
 
             {/* One-line Analogy */}
-            <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors font-display leading-snug">
+            <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors font-display leading-snug">
               {connection.analogy}
             </h3>
 
@@ -124,29 +124,29 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
             {mode === 'serious' ? (
               /* SERIOUS MODE: Structural Explanation Leads */
               <div className="space-y-4">
-                <p className="text-slate-700 text-sm sm:text-base leading-relaxed font-normal">
+                <p className="text-slate-700 text-xs leading-relaxed font-normal">
                   {connection.explanation}
                 </p>
-                <div className="pt-3 border-t border-slate-100 flex items-start gap-2 text-xs text-slate-500">
-                  <span className="font-semibold text-slate-600 shrink-0">Fun fact:</span>
-                  <span className="italic">{connection.funFact}</span>
+                <div className="pt-3 border-t border-slate-200 flex items-start gap-2 text-[11px] text-slate-500">
+                  <span className="font-bold text-slate-650 shrink-0">Fun fact:</span>
+                  <span className="italic leading-relaxed">{connection.funFact}</span>
                 </div>
               </div>
             ) : (
               /* PLAYFUL MODE: Fun Fact Prominent Callout */
               <div className="space-y-4">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-violet-50/80 border border-indigo-100 text-indigo-950 text-sm font-medium leading-relaxed shadow-inner">
-                  <div className="flex items-center gap-1.5 mb-1 text-indigo-700">
+                <div className="p-4 rounded-xl bg-amber-50 border border-slate-900 text-slate-900 text-xs font-medium leading-relaxed shadow-[2px_2px_0px_#11161B]">
+                  <div className="flex items-center gap-1.5 mb-1.5 text-amber-700">
                     <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '3s' }} />
-                    <span className="font-semibold text-xs uppercase tracking-wider">
+                    <span className="font-bold text-[10px] uppercase tracking-wider">
                       Screenshot-Worthy Fact
                     </span>
                   </div>
                   {connection.funFact}
                 </div>
 
-                <p className="text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-3">
-                  <span className="font-semibold text-slate-700 block text-xs uppercase tracking-wider mb-1">
+                <p className="text-slate-700 text-xs leading-relaxed border-t border-slate-200 pt-3">
+                  <span className="font-bold text-slate-700 block text-[10px] uppercase tracking-wider mb-1">
                     Structural Mechanism:
                   </span>
                   {connection.explanation}

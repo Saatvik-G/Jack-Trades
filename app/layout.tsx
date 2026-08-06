@@ -1,17 +1,20 @@
 import type { Metadata } from 'next';
-import { Inter, Outfit } from 'next/font/google';
+import { Cormorant_Garamond, Space_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 
-const inter = Inter({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-display',
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   display: 'swap',
 });
 
-const outfit = Outfit({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  variable: '--font-outfit',
+  variable: '--font-sans',
+  weight: ['400', '500', '700'],
   display: 'swap',
 });
 
@@ -52,8 +55,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
-      <body className="flex flex-col min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-indigo-500 selection:text-white relative">
+    <html lang="en" className={`${cormorant.variable} ${spaceGrotesk.variable}`}>
+      <body className="flex flex-col min-h-screen bg-[#FAF9F6] text-slate-900 font-sans antialiased selection:bg-indigo-650 selection:text-white relative">
         <AmbientBackground />
         <Providers>{children}</Providers>
         <Analytics />
